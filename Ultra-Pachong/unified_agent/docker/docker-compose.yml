@@ -1,0 +1,42 @@
+version: '3.8'
+
+services:
+  # 核心Agent服务
+  agent-core:
+    build: .
+    container_name: unified-agent
+    volumes:
+      - ./data/knowledge:/app/data/knowledge    # 知识持久化
+      - ./skills:/app/skills:ro                  # Skills文档(只读)
+    environment:
+      - CLEANUP_AFTER_TASK=true
+      - LOG_LEVEL=INFO
+    ports:
+      - "8080:8080"                              # MCP API端口
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:8080/health"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+
+  # 任务执行器 (可选，用于隔离执行)
+  task-runner:
+    build: .
+    container_name: task-runner
+    tmpfs:
+      - /tmp/task_code:size=100M                # 临时代码，重启清除
+    environment:
+      - RUNNER_MODE=true
+    depends_on:
+      - agent-core
+    profiles:
+      - runner                                   # 可选启动
+
+volumes:
+  knowledge-data:
+    driver: local
+
+networks:
+  default:
+    name: agent-network

@@ -1,0 +1,38 @@
+# Python
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+.Python
+venv/
+env/
+.venv/
+.env.local
+
+# IDE
+.idea/
+.vscode/
+*.swp
+*.swo
+
+# Data & Output
+data/cookies.json
+data/*.csv
+*.csv
+*.png
+*.log
+
+# Debug files
+debug_*.png
+search_*.png
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Node
+node_modules/
+
+# Temp
+*.tmp
+*.temp
