@@ -1,0 +1,179 @@
+# ============================================================
+# 全服务环境隔离部署 - 多账号多IP
+# ============================================================
+# 架构:
+#   New API (:3001) ← 统一入口
+#     ├── clove-pro  (:5201) ← 2个Claude Pro  ← 静态IP-A
+#     ├── clove-max  (:5202) ← 1个Claude Max  ← 静态IP-B
+#     ├── chat2api-1 (:5005) ← 2-3个GPT账号   ← 静态IP-C
+#     ├── chat2api-2 (:5006) ← 2-3个GPT账号   ← 静态IP-D
+#     └── anti-api   (:8964) ← 3个Antigravity ← 静态IP-E
+#
+# 环境隔离: 每组服务独立Docker网络，互不可见
+# ============================================================
+
+services:
+
+  # ==================== 统一入口 ====================
+  new-api:
+    image: calciumion/new-api:latest
+    container_name: new-api
+    restart: always
+    ports:
+      - "3001:3000"
+    volumes:
+      - ./new-api/data:/data
+    environment:
+      - TZ=Asia/Shanghai
+      - SQL_DSN=
+      - REDIS_CONN_STRING=
+      - SESSION_SECRET=@njIJcImSeD3golbGFDz01S5xCaBGXZ@l9Nhngi40
+      - STREAMING_TIMEOUT=120
+      - ENABLE_BATCH_UPDATE=true
+    networks:
+      - gateway-net
+    extra_hosts:
+      - "host.docker.internal:host-gateway"
+    healthcheck:
+      test: ["CMD", "wget", "-qO-", "http://localhost:3000/api/status"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+
+  # ==================== Claude Pro (2个账号) ====================
+  clove-pro:
+    build:
+      context: ./clove
+      dockerfile: Dockerfile
+    container_name: clove-pro
+    restart: unless-stopped
+    ports:
+      - "5201:5201"
+    volumes:
+      - ./clove/data-pro:/data        # 独立数据目录
+    environment:
+      - HOST=0.0.0.0
+      - PORT=5201
+      - DATA_FOLDER=/data
+      - API_KEYS=sk-1m7c09yOPIlV4C10SnYO1II04Cxqf6fg
+      - ADMIN_API_KEYS=sk-1m7c09yOPIlV4C10SnYO1II04Cxqf6fg
+      # 代理IP-A (日本静态住宅IP)
+      - PROXY_URL=socks5://14aea1862cd31:2123e0e0cf@175.29.206.206:12324
+      - LOG_LEVEL=INFO
+      - LOG_TO_FILE=true
+      - LOG_FILE_PATH=/data/logs/app.log
+    networks:
+      - gateway-net
+      - claude-pro-net   # 独立网络
+    # 启动后通过 API 添加2个Pro账号的Cookie
+
+  # ==================== Claude Max (1个账号) ====================
+  clove-max:
+    build:
+      context: ./clove
+      dockerfile: Dockerfile
+    container_name: clove-max
+    restart: unless-stopped
+    ports:
+      - "5202:5201"
+    volumes:
+      - ./clove/data-max:/data        # 独立数据目录
+    environment:
+      - HOST=0.0.0.0
+      - PORT=5201
+      - DATA_FOLDER=/data
+      - API_KEYS=sk-KMq95WvrUmhSdwRqkOdOMxpdljJh02wH
+      - ADMIN_API_KEYS=sk-KMq95WvrUmhSdwRqkOdOMxpdljJh02wH
+      # 代理IP-B (日本静态住宅IP)
+      - PROXY_URL=socks5://14aea1862cd31:2123e0e0cf@175.29.207.212:12324
+      - LOG_LEVEL=INFO
+      - LOG_TO_FILE=true
+      - LOG_FILE_PATH=/data/logs/app.log
+    networks:
+      - gateway-net
+      - claude-max-net   # 独立网络
+    # 启动后通过 API 添加1个Max账号的Cookie
+
+  # ==================== GPT 组1 (2-3个账号) ====================
+  chat2api-1:
+    image: lanqian528/chat2api:latest
+    container_name: chat2api-1
+    restart: unless-stopped
+    ports:
+      - "5005:5005"
+    volumes:
+      - ./ai-proxy/gpt-proxy/data-1:/app/data  # 独立数据目录
+    environment:
+      - AUTHORIZATION=sk-t62tslySgJ1ZaesZF1D608QHFs1xXxjj
+      # 代理IP-C (日本静态住宅IP)
+      - PROXY_URL=socks5://14aea1862cd31:2123e0e0cf@175.29.203.124:12324
+    networks:
+      - gateway-net
+      - gpt-group1-net   # 独立网络
+    extra_hosts:
+      - "host.docker.internal:host-gateway"
+    # 启动后通过 /tokens 接口添加2-3个GPT账号的Token
+
+  # ==================== GPT 组2 (2-3个账号) ====================
+  chat2api-2:
+    image: lanqian528/chat2api:latest
+    container_name: chat2api-2
+    restart: unless-stopped
+    ports:
+      - "5006:5005"
+    volumes:
+      - ./ai-proxy/gpt-proxy/data-2:/app/data  # 独立数据目录
+    environment:
+      - AUTHORIZATION=sk-z4J38XPnBq5dtLQcGMIdpI58k97wQgkS
+      # 代理IP-D (日本静态住宅IP)
+      - PROXY_URL=socks5://14aea1862cd31:2123e0e0cf@175.29.206.28:12324
+    networks:
+      - gateway-net
+      - gpt-group2-net   # 独立网络
+    extra_hosts:
+      - "host.docker.internal:host-gateway"
+    # 启动后通过 /tokens 接口添加2-3个GPT账号的Token
+
+  # ==================== Antigravity (3个账号) ====================
+  anti-api:
+    image: ink1ing/anti-api:latest
+    container_name: anti-api
+    restart: unless-stopped
+    ports:
+      - "8964:8964"
+      - "51121:51121"     # OAuth 回调端口
+    volumes:
+      - ./antigravity/data:/app/data
+    environment:
+      - ANTI_API_DATA_DIR=/app/data
+      - ANTI_API_NO_OPEN=1
+      - ANTI_API_OAUTH_NO_OPEN=1
+      # 代理IP-E (日本静态住宅IP)
+      - PROXY=socks5://14aea1862cd31:2123e0e0cf@175.29.200.253:12324
+    networks:
+      - gateway-net
+      - antigravity-net  # 独立网络
+    extra_hosts:
+      - "host.docker.internal:host-gateway"
+
+# ==================== 网络隔离 ====================
+# 每组服务有自己的独立网络，只通过 gateway-net 连接到 New API
+# 不同组的容器之间完全不可见
+networks:
+  gateway-net:           # 所有服务连接到 New API 的公共网络
+    driver: bridge
+  claude-pro-net:        # Claude Pro 独立网络
+    driver: bridge
+    internal: true
+  claude-max-net:        # Claude Max 独立网络
+    driver: bridge
+    internal: true
+  gpt-group1-net:        # GPT 组1 独立网络
+    driver: bridge
+    internal: true
+  gpt-group2-net:        # GPT 组2 独立网络
+    driver: bridge
+    internal: true
+  antigravity-net:       # Antigravity 独立网络
+    driver: bridge
+    internal: true

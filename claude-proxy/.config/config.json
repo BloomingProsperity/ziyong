@@ -1,0 +1,9 @@
+{
+  "upstream": [],
+  "loadBalance": "failover",
+  "responsesUpstream": [],
+  "responsesLoadBalance": "failover",
+  "geminiUpstream": [],
+  "geminiLoadBalance": "failover",
+  "fuzzyModeEnabled": true
+}

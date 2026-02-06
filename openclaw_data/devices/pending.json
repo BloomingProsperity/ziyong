@@ -1,0 +1,23 @@
+{
+  "504d6be6-1fda-4820-a60d-907db03cb64f": {
+    "requestId": "504d6be6-1fda-4820-a60d-907db03cb64f",
+    "deviceId": "c9f1ecafc56d9eda59d196c553251916bfd9984319969c50ac7caa489ba9127d",
+    "publicKey": "gHxWpm7rdGqtBfKHUxD4LlENzTcvL3kpKWDUbXEdDW8",
+    "platform": "win32",
+    "clientId": "cli",
+    "clientMode": "cli",
+    "role": "operator",
+    "roles": [
+      "operator"
+    ],
+    "scopes": [
+      "operator.admin",
+      "operator.approvals",
+      "operator.pairing"
+    ],
+    "remoteIp": "172.17.0.1",
+    "silent": false,
+    "isRepair": false,
+    "ts": 1769759085299
+  }
+}

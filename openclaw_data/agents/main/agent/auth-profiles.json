@@ -1,0 +1,20 @@
+{
+  "version": 1,
+  "profiles": {
+    "anthropic:huakai": {
+      "type": "token",
+      "provider": "anthropic",
+      "token": "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"
+    }
+  },
+  "lastGood": {
+    "anthropic": "anthropic:huakai"
+  },
+  "usageStats": {
+    "anthropic:huakai": {
+      "errorCount": 0,
+      "lastFailureAt": 1769757807527,
+      "lastUsed": 1769758172487
+    }
+  }
+}

@@ -1,0 +1,1 @@
+{"@context":"\/contexts\/Domain","@id":"\/domains","@type":"hydra:Collection","hydra:totalItems":1,"hydra:member":[{"@id":"\/domains\/6963580628188cd7eda170e0","@type":"Domain","id":"6963580628188cd7eda170e0","domain":"virgilian.com","isActive":true,"isPrivate":false,"createdAt":"2026-01-11T00:00:00+00:00","updatedAt":"2026-01-11T00:00:00+00:00"}]}

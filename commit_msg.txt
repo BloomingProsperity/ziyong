@@ -1,0 +1,17 @@
+feat: JD空调评论爬虫项目 - 阶段性进展
+
+实现功能:
+- Playwright浏览器自动化爬虫框架
+- 京东H5ST签名算法研究 (5.2版本)
+- 网络请求拦截方案
+- DOM评论提取备用方案
+- Cookie管理与自动登录
+- 反爬虫检测与延迟策略
+- 多品牌SKU配置
+
+待解决:
+- Cookie会话失效问题
+- JD风控检测绕过
+- 签名算法完整实现
+
+Co-Authored-By: Claude <noreply@anthropic.com>

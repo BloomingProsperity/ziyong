@@ -36,3 +36,19 @@ node_modules/
 # Temp
 *.tmp
 *.temp
+
+# Sensitive - API keys, tokens, credentials
+*.json.bak
+newapi_cookie.txt
+.env
+.env.*
+!.env.example
+
+# Docker data
+**/data/one-api.db
+**/data/logs/
+
+# Claude credentials
+.claude/
+.trae/
+nul
