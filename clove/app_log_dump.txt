@@ -1,0 +1,241 @@
+2026-02-04 05:01:12.996 | INFO     | app.services.account:load_accounts:481 - No accounts file found at /data/accounts.json
+2026-02-04 05:01:12.997 | INFO     | app.services.session:start_cleanup_task:133 - Started session cleanup task
+2026-02-04 05:01:12.998 | INFO     | app.services.tool_call:start_cleanup_task:95 - Started tool call cleanup task
+2026-02-04 05:01:12.998 | INFO     | app.services.cache:start_cleanup_task:198 - Started cache cleanup task
+2026-02-04 05:02:12.854 | WARNING  | app.core.error_handler:handle_app_exception:71 - AppException: InvalidAPIKeyError - Code: 401011, Message: 无效的 API 密钥。请检查您的 API 密钥并重试。, Context: {}
+2026-02-04 05:03:14.183 | INFO     | app.main:lifespan:39 - Shutting down Clove...
+2026-02-04 05:03:14.191 | INFO     | app.services.account:save_accounts:466 - Saved 0 accounts to /data/accounts.json
+2026-02-04 05:03:14.193 | INFO     | app.services.session:stop_cleanup_task:143 - Stopped session cleanup task
+2026-02-04 05:03:14.193 | INFO     | app.services.session:cleanup_all:182 - Cleaned up all sessions
+2026-02-04 05:03:14.194 | INFO     | app.services.tool_call:stop_cleanup_task:105 - Stopped tool call cleanup task
+2026-02-04 05:03:14.194 | INFO     | app.services.tool_call:cleanup_all:140 - Cleaned up all tool calls
+2026-02-04 05:03:14.195 | INFO     | app.services.cache:stop_cleanup_task:208 - Stopped cache cleanup task
+2026-02-04 05:03:14.195 | INFO     | app.services.cache:cleanup_all:244 - Cleaned up all cache checkpoints
+2026-02-04 05:03:18.872 | INFO     | app.services.account:load_accounts:496 - Loaded 0 accounts from /data/accounts.json
+2026-02-04 05:03:18.873 | INFO     | app.services.session:start_cleanup_task:133 - Started session cleanup task
+2026-02-04 05:03:18.873 | INFO     | app.services.tool_call:start_cleanup_task:95 - Started tool call cleanup task
+2026-02-04 05:03:18.874 | INFO     | app.services.cache:start_cleanup_task:198 - Started cache cleanup task
+2026-02-04 05:08:42.523 | INFO     | app.services.oauth:get_organization_info:106 - Found organization UUID: 0ee15e6d-96b2-4c1d-bf8a-0907a86934d2, capabilities: ['chat', 'claude_max']
+2026-02-04 05:08:42.528 | INFO     | app.services.account:save_accounts:466 - Saved 1 accounts to /data/accounts.json
+2026-02-04 05:08:42.528 | INFO     | app.services.account:add_account:115 - Added new account: 0ee15e6d... (auth_type: cookie_only, cookie: sessionKey=sk-ant-si..., oauth: No)
+2026-02-04 05:08:42.530 | INFO     | app.services.account:_attempt_oauth_authentication:392 - Attempting OAuth authentication for account: 0ee15e6d...
+2026-02-04 05:08:43.149 | INFO     | app.services.oauth:get_organization_info:106 - Found organization UUID: 0ee15e6d-96b2-4c1d-bf8a-0907a86934d2, capabilities: ['chat', 'claude_max']
+2026-02-04 05:08:43.708 | INFO     | app.services.oauth:authorize_with_cookie:171 - Got redirect URI: https://console.anthropic.com/oauth/code/callback?code=oXpQx8jQzmE5GaAqWBqLeZ2Z9jspyFEIT7cqfTBVs7UV7wUB&state=Pi-G_z30_F-WhJvtE0OjSJ275ewTQfCwwumRHCi2Bi0
+2026-02-04 05:08:43.708 | INFO     | app.services.oauth:authorize_with_cookie:185 - Extracted authorization code: oXpQx8jQzmE5GaAqWBqL...
+2026-02-04 05:08:44.501 | INFO     | app.services.account:save_accounts:466 - Saved 1 accounts to /data/accounts.json
+2026-02-04 05:08:44.502 | INFO     | app.services.oauth:authenticate_account:297 - Successfully authenticated account with OAuth: 0ee15e6d...
+2026-02-04 05:08:44.502 | INFO     | app.services.account:_attempt_oauth_authentication:402 - OAuth authentication successful for account: 0ee15e6d...
+2026-02-04 05:09:21.475 | INFO     | app.services.oauth:get_organization_info:106 - Found organization UUID: e4126f6a-36cc-45cd-b67f-5487c2917a97, capabilities: ['chat', 'claude_pro']
+2026-02-04 05:09:21.483 | INFO     | app.services.account:save_accounts:466 - Saved 2 accounts to /data/accounts.json
+2026-02-04 05:09:21.483 | INFO     | app.services.account:add_account:115 - Added new account: e4126f6a... (auth_type: cookie_only, cookie: sessionKey=sk-ant-si..., oauth: No)
+2026-02-04 05:09:21.485 | INFO     | app.services.account:_attempt_oauth_authentication:392 - Attempting OAuth authentication for account: e4126f6a...
+2026-02-04 05:09:22.034 | INFO     | app.services.oauth:get_organization_info:106 - Found organization UUID: e4126f6a-36cc-45cd-b67f-5487c2917a97, capabilities: ['chat', 'claude_pro']
+2026-02-04 05:09:22.631 | INFO     | app.services.oauth:authorize_with_cookie:171 - Got redirect URI: https://console.anthropic.com/oauth/code/callback?code=ht1Gp5Uxqj6AQHcsII2iv9I283PMM6xxC2YA1sQ91s0lNR8c&state=Nncmbv9RT9m1CThMMu2k93hufOVuCe9PD8ehn7eGbCA
+2026-02-04 05:09:22.632 | INFO     | app.services.oauth:authorize_with_cookie:185 - Extracted authorization code: ht1Gp5Uxqj6AQHcsII2i...
+2026-02-04 05:09:23.456 | INFO     | app.services.account:save_accounts:466 - Saved 2 accounts to /data/accounts.json
+2026-02-04 05:09:23.457 | INFO     | app.services.oauth:authenticate_account:297 - Successfully authenticated account with OAuth: e4126f6a...
+2026-02-04 05:09:23.457 | INFO     | app.services.account:_attempt_oauth_authentication:402 - OAuth authentication successful for account: e4126f6a...
+2026-02-04 05:12:29.019 | WARNING  | app.core.error_handler:handle_app_exception:71 - AppException: ClaudeAuthenticationError - Code: 400124, Message: 身份验证错误。请检查您的 Claude Cookie 或 OAuth 凭证；并确保安装了 curl 依赖且不在 Termux 环境下。, Context: {}
+2026-02-04 05:15:09.056 | INFO     | app.processors.claude_ai.claude_api_processor:process:178 - Successfully processed request via Claude API
+2026-02-04 05:28:27.230 | INFO     | app.processors.claude_ai.claude_api_processor:process:178 - Successfully processed request via Claude API
+2026-02-04 06:11:47.290 | ERROR    | app.processors.claude_ai.pipeline:process:78 - Pipeline processing failed: is_builder error: wreq::Error { kind: Builder, source: InvalidUri(InvalidScheme) }
+2026-02-04 06:14:17.372 | WARNING  | app.core.error_handler:handle_app_exception:71 - AppException: InvalidAPIKeyError - Code: 401011, Message: Invalid API key. Please check your API key and try again., Context: {}
+2026-02-04 06:16:08.178 | INFO     | app.main:lifespan:39 - Shutting down Clove...
+2026-02-04 06:16:08.184 | INFO     | app.services.account:save_accounts:466 - Saved 2 accounts to /data/accounts.json
+2026-02-04 06:16:08.185 | INFO     | app.services.session:stop_cleanup_task:143 - Stopped session cleanup task
+2026-02-04 06:16:08.185 | INFO     | app.services.session:cleanup_all:182 - Cleaned up all sessions
+2026-02-04 06:16:08.186 | INFO     | app.services.tool_call:stop_cleanup_task:105 - Stopped tool call cleanup task
+2026-02-04 06:16:08.186 | INFO     | app.services.tool_call:cleanup_all:140 - Cleaned up all tool calls
+2026-02-04 06:16:08.187 | INFO     | app.services.cache:stop_cleanup_task:208 - Stopped cache cleanup task
+2026-02-04 06:16:08.187 | INFO     | app.services.cache:cleanup_all:244 - Cleaned up all cache checkpoints
+2026-02-04 06:16:14.065 | INFO     | app.services.account:load_accounts:496 - Loaded 2 accounts from /data/accounts.json
+2026-02-04 06:16:14.065 | INFO     | app.services.session:start_cleanup_task:133 - Started session cleanup task
+2026-02-04 06:16:14.066 | INFO     | app.services.tool_call:start_cleanup_task:95 - Started tool call cleanup task
+2026-02-04 06:16:14.066 | INFO     | app.services.cache:start_cleanup_task:198 - Started cache cleanup task
+2026-02-04 06:16:52.095 | ERROR    | app.processors.claude_ai.claude_api_processor:process:145 - Claude API error: 404 - {'type': 'error', 'error': {'type': 'not_found_error', 'message': 'model: claude-3-opus-20240229'}, 'request_id': 'req_011CXnYJUZp1pQnM6hPduX6U'}
+2026-02-04 06:16:52.096 | ERROR    | app.processors.claude_ai.pipeline:process:78 - Pipeline processing failed: ClaudeHttpError(error_code=503130, message_key='claudeClient.httpError', status_code=404, context={'url': 'https://api.anthropic.com/v1/messages', 'status_code': 404, 'error_type': 'not_found_error', 'error_message': 'model: claude-3-opus-20240229'})
+2026-02-04 06:16:52.097 | WARNING  | app.utils.retry:log_before_sleep:19 - Retrying create_message after attempt 1 due to ClaudeHttpError: ClaudeHttpError(error_code=503130, message_key='claudeClient.httpError', status_code=404, context={'url': 'https://api.anthropic.com/v1/messages', 'status_code': 404, 'error_type': 'not_found_error', 'error_message': 'model: claude-3-opus-20240229'})
+2026-02-04 06:16:53.925 | ERROR    | app.processors.claude_ai.claude_api_processor:process:145 - Claude API error: 404 - {'type': 'error', 'error': {'type': 'not_found_error', 'message': 'model: claude-3-opus-20240229'}, 'request_id': 'req_011CXnYJcHA4UrQPKfggwBa8'}
+2026-02-04 06:16:53.926 | ERROR    | app.processors.claude_ai.pipeline:process:78 - Pipeline processing failed: ClaudeHttpError(error_code=503130, message_key='claudeClient.httpError', status_code=404, context={'url': 'https://api.anthropic.com/v1/messages', 'status_code': 404, 'error_type': 'not_found_error', 'error_message': 'model: claude-3-opus-20240229'})
+2026-02-04 06:16:53.927 | WARNING  | app.utils.retry:log_before_sleep:19 - Retrying create_message after attempt 2 due to ClaudeHttpError: ClaudeHttpError(error_code=503130, message_key='claudeClient.httpError', status_code=404, context={'url': 'https://api.anthropic.com/v1/messages', 'status_code': 404, 'error_type': 'not_found_error', 'error_message': 'model: claude-3-opus-20240229'})
+2026-02-04 06:16:55.506 | ERROR    | app.processors.claude_ai.claude_api_processor:process:145 - Claude API error: 404 - {'type': 'error', 'error': {'type': 'not_found_error', 'message': 'model: claude-3-opus-20240229'}, 'request_id': 'req_011CXnYJj9eiMhKZVGC46pYb'}
+2026-02-04 06:16:55.507 | ERROR    | app.processors.claude_ai.pipeline:process:78 - Pipeline processing failed: ClaudeHttpError(error_code=503130, message_key='claudeClient.httpError', status_code=404, context={'url': 'https://api.anthropic.com/v1/messages', 'status_code': 404, 'error_type': 'not_found_error', 'error_message': 'model: claude-3-opus-20240229'})
+2026-02-04 06:16:55.508 | WARNING  | app.core.error_handler:handle_app_exception:71 - AppException: ClaudeHttpError - Code: 503130, Message: HTTP error occurred when calling Claude AI: not_found_error - model: claude-3-opus-20240229 (Status: 404), Context: {'url': 'https://api.anthropic.com/v1/messages', 'status_code': 404, 'error_type': 'not_found_error', 'error_message': 'model: claude-3-opus-20240229'}
+2026-02-04 06:18:22.460 | WARNING  | app.core.error_handler:handle_app_exception:71 - AppException: InvalidAPIKeyError - Code: 401011, Message: 无效的 API 密钥。请检查您的 API 密钥并重试。, Context: {}
+2026-02-04 06:18:24.479 | WARNING  | app.core.error_handler:handle_app_exception:71 - AppException: InvalidAPIKeyError - Code: 401011, Message: 无效的 API 密钥。请检查您的 API 密钥并重试。, Context: {}
+2026-02-04 06:20:39.692 | ERROR    | app.processors.claude_ai.claude_api_processor:process:145 - Claude API error: 404 - {'type': 'error', 'error': {'type': 'not_found_error', 'message': 'model: claude-3-opus-20240229'}, 'request_id': 'req_011CXnYbEkpoHoopym3oTKvm'}
+2026-02-04 06:20:39.693 | ERROR    | app.processors.claude_ai.pipeline:process:78 - Pipeline processing failed: ClaudeHttpError(error_code=503130, message_key='claudeClient.httpError', status_code=404, context={'url': 'https://api.anthropic.com/v1/messages', 'status_code': 404, 'error_type': 'not_found_error', 'error_message': 'model: claude-3-opus-20240229'})
+2026-02-04 06:20:39.695 | WARNING  | app.utils.retry:log_before_sleep:19 - Retrying create_message after attempt 1 due to ClaudeHttpError: ClaudeHttpError(error_code=503130, message_key='claudeClient.httpError', status_code=404, context={'url': 'https://api.anthropic.com/v1/messages', 'status_code': 404, 'error_type': 'not_found_error', 'error_message': 'model: claude-3-opus-20240229'})
+2026-02-04 06:20:41.253 | ERROR    | app.processors.claude_ai.claude_api_processor:process:145 - Claude API error: 404 - {'type': 'error', 'error': {'type': 'not_found_error', 'message': 'model: claude-3-opus-20240229'}, 'request_id': 'req_011CXnYbNBZ1J5r94UpT1Sc2'}
+2026-02-04 06:20:41.253 | ERROR    | app.processors.claude_ai.pipeline:process:78 - Pipeline processing failed: ClaudeHttpError(error_code=503130, message_key='claudeClient.httpError', status_code=404, context={'url': 'https://api.anthropic.com/v1/messages', 'status_code': 404, 'error_type': 'not_found_error', 'error_message': 'model: claude-3-opus-20240229'})
+2026-02-04 06:20:41.254 | WARNING  | app.utils.retry:log_before_sleep:19 - Retrying create_message after attempt 2 due to ClaudeHttpError: ClaudeHttpError(error_code=503130, message_key='claudeClient.httpError', status_code=404, context={'url': 'https://api.anthropic.com/v1/messages', 'status_code': 404, 'error_type': 'not_found_error', 'error_message': 'model: claude-3-opus-20240229'})
+2026-02-04 06:20:42.795 | ERROR    | app.processors.claude_ai.claude_api_processor:process:145 - Claude API error: 404 - {'type': 'error', 'error': {'type': 'not_found_error', 'message': 'model: claude-3-opus-20240229'}, 'request_id': 'req_011CXnYbUstNkzSN7TqoN4TB'}
+2026-02-04 06:20:42.796 | ERROR    | app.processors.claude_ai.pipeline:process:78 - Pipeline processing failed: ClaudeHttpError(error_code=503130, message_key='claudeClient.httpError', status_code=404, context={'url': 'https://api.anthropic.com/v1/messages', 'status_code': 404, 'error_type': 'not_found_error', 'error_message': 'model: claude-3-opus-20240229'})
+2026-02-04 06:20:42.796 | WARNING  | app.core.error_handler:handle_app_exception:71 - AppException: ClaudeHttpError - Code: 503130, Message: HTTP error occurred when calling Claude AI: not_found_error - model: claude-3-opus-20240229 (Status: 404), Context: {'url': 'https://api.anthropic.com/v1/messages', 'status_code': 404, 'error_type': 'not_found_error', 'error_message': 'model: claude-3-opus-20240229'}
+2026-02-04 06:26:42.619 | ERROR    | app.processors.claude_ai.pipeline:process:78 - Pipeline processing failed: is_connect error: wreq::Error { kind: Request, uri: https://api.anthropic.com/v1/messages, source: Error { kind: Connect, source: Some(ConnectFailed(ConnectError("dns error", ResolveError { kind: Proto(ProtoError { kind: NoRecordsFound { query: Query { name: Name("host.docker.internal."), query_type: AAAA, query_class: IN }, soa: Some(Record { name_labels: Name("."), dns_class: IN, ttl: 86396, rdata: SOA { mname: Name("a.root-servers.net."), rname: Name("nstld.verisign-grs.com."), serial: 2026020400, refresh: 1800, retry: 900, expire: 604800, minimum: 86400 } }), ns: None, negative_ttl: Some(86396), response_code: NXDomain, trusted: true, authorities: None } }) }))), connect_info: None } }
+2026-02-04 06:31:20.849 | INFO     | app.main:lifespan:39 - Shutting down Clove...
+2026-02-04 06:31:20.867 | INFO     | app.services.account:save_accounts:466 - Saved 2 accounts to /data/accounts.json
+2026-02-04 06:31:20.868 | INFO     | app.services.session:stop_cleanup_task:143 - Stopped session cleanup task
+2026-02-04 06:31:20.869 | INFO     | app.services.session:cleanup_all:182 - Cleaned up all sessions
+2026-02-04 06:31:20.870 | INFO     | app.services.tool_call:stop_cleanup_task:105 - Stopped tool call cleanup task
+2026-02-04 06:31:20.870 | INFO     | app.services.tool_call:cleanup_all:140 - Cleaned up all tool calls
+2026-02-04 06:31:20.871 | INFO     | app.services.cache:stop_cleanup_task:208 - Stopped cache cleanup task
+2026-02-04 06:31:20.871 | INFO     | app.services.cache:cleanup_all:244 - Cleaned up all cache checkpoints
+2026-02-04 06:31:23.458 | INFO     | app.services.account:load_accounts:496 - Loaded 2 accounts from /data/accounts.json
+2026-02-04 06:31:23.459 | INFO     | app.services.session:start_cleanup_task:133 - Started session cleanup task
+2026-02-04 06:31:23.459 | INFO     | app.services.tool_call:start_cleanup_task:95 - Started tool call cleanup task
+2026-02-04 06:31:23.459 | INFO     | app.services.cache:start_cleanup_task:198 - Started cache cleanup task
+2026-02-04 06:31:29.848 | ERROR    | app.processors.claude_ai.pipeline:process:78 - Pipeline processing failed: is_connect error: wreq::Error { kind: Request, uri: https://api.anthropic.com/v1/messages, source: Error { kind: Connect, source: Some(ConnectFailed(ConnectError("dns error", ResolveError { kind: Proto(ProtoError { kind: NoRecordsFound { query: Query { name: Name("host.docker.internal."), query_type: AAAA, query_class: IN }, soa: Some(Record { name_labels: Name("."), dns_class: IN, ttl: 86372, rdata: SOA { mname: Name("a.root-servers.net."), rname: Name("nstld.verisign-grs.com."), serial: 2026020400, refresh: 1800, retry: 900, expire: 604800, minimum: 86400 } }), ns: None, negative_ttl: Some(86372), response_code: NXDomain, trusted: true, authorities: None } }) }))), connect_info: None } }
+2026-02-04 06:34:01.249 | INFO     | app.main:lifespan:39 - Shutting down Clove...
+2026-02-04 06:34:01.258 | INFO     | app.services.account:save_accounts:466 - Saved 2 accounts to /data/accounts.json
+2026-02-04 06:34:01.259 | INFO     | app.services.session:stop_cleanup_task:143 - Stopped session cleanup task
+2026-02-04 06:34:01.260 | INFO     | app.services.session:cleanup_all:182 - Cleaned up all sessions
+2026-02-04 06:34:01.260 | INFO     | app.services.tool_call:stop_cleanup_task:105 - Stopped tool call cleanup task
+2026-02-04 06:34:01.260 | INFO     | app.services.tool_call:cleanup_all:140 - Cleaned up all tool calls
+2026-02-04 06:34:01.261 | INFO     | app.services.cache:stop_cleanup_task:208 - Stopped cache cleanup task
+2026-02-04 06:34:01.261 | INFO     | app.services.cache:cleanup_all:244 - Cleaned up all cache checkpoints
+2026-02-04 06:34:44.594 | INFO     | app.services.account:load_accounts:496 - Loaded 2 accounts from /data/accounts.json
+2026-02-04 06:34:44.595 | INFO     | app.services.session:start_cleanup_task:133 - Started session cleanup task
+2026-02-04 06:34:44.596 | INFO     | app.services.tool_call:start_cleanup_task:95 - Started tool call cleanup task
+2026-02-04 06:34:44.596 | INFO     | app.services.cache:start_cleanup_task:198 - Started cache cleanup task
+2026-02-04 06:35:46.861 | INFO     | app.main:lifespan:39 - Shutting down Clove...
+2026-02-04 06:35:46.883 | INFO     | app.services.account:save_accounts:466 - Saved 2 accounts to /data/accounts.json
+2026-02-04 06:35:46.885 | INFO     | app.services.session:stop_cleanup_task:143 - Stopped session cleanup task
+2026-02-04 06:35:46.887 | INFO     | app.services.session:cleanup_all:182 - Cleaned up all sessions
+2026-02-04 06:35:46.887 | INFO     | app.services.tool_call:stop_cleanup_task:105 - Stopped tool call cleanup task
+2026-02-04 06:35:46.888 | INFO     | app.services.tool_call:cleanup_all:140 - Cleaned up all tool calls
+2026-02-04 06:35:46.889 | INFO     | app.services.cache:stop_cleanup_task:208 - Stopped cache cleanup task
+2026-02-04 06:35:46.890 | INFO     | app.services.cache:cleanup_all:244 - Cleaned up all cache checkpoints
+2026-02-04 06:36:25.089 | INFO     | app.services.account:load_accounts:496 - Loaded 2 accounts from /data/accounts.json
+2026-02-04 06:36:25.090 | INFO     | app.services.session:start_cleanup_task:133 - Started session cleanup task
+2026-02-04 06:36:25.091 | INFO     | app.services.tool_call:start_cleanup_task:95 - Started tool call cleanup task
+2026-02-04 06:36:25.092 | INFO     | app.services.cache:start_cleanup_task:198 - Started cache cleanup task
+2026-02-04 06:41:22.822 | INFO     | app.main:lifespan:39 - Shutting down Clove...
+2026-02-04 06:41:22.831 | INFO     | app.services.account:save_accounts:466 - Saved 2 accounts to /data/accounts.json
+2026-02-04 06:41:22.832 | INFO     | app.services.session:stop_cleanup_task:143 - Stopped session cleanup task
+2026-02-04 06:41:22.832 | INFO     | app.services.session:cleanup_all:182 - Cleaned up all sessions
+2026-02-04 06:41:22.833 | INFO     | app.services.tool_call:stop_cleanup_task:105 - Stopped tool call cleanup task
+2026-02-04 06:41:22.833 | INFO     | app.services.tool_call:cleanup_all:140 - Cleaned up all tool calls
+2026-02-04 06:41:22.833 | INFO     | app.services.cache:stop_cleanup_task:208 - Stopped cache cleanup task
+2026-02-04 06:41:22.834 | INFO     | app.services.cache:cleanup_all:244 - Cleaned up all cache checkpoints
+2026-02-04 06:41:24.572 | INFO     | app.services.account:load_accounts:496 - Loaded 2 accounts from /data/accounts.json
+2026-02-04 06:41:24.573 | INFO     | app.services.session:start_cleanup_task:133 - Started session cleanup task
+2026-02-04 06:41:24.573 | INFO     | app.services.tool_call:start_cleanup_task:95 - Started tool call cleanup task
+2026-02-04 06:41:24.574 | INFO     | app.services.cache:start_cleanup_task:198 - Started cache cleanup task
+2026-02-04 06:41:55.107 | ERROR    | app.processors.claude_ai.pipeline:process:78 - Pipeline processing failed: is_connect error: wreq::Error { kind: Request, uri: https://api.anthropic.com/v1/messages, source: Error { kind: Connect, source: Some(ConnectFailed(ConnectError("dns error", ResolveError { kind: Proto(ProtoError { kind: Timeout }) }))), connect_info: None } }
+2026-02-04 06:43:54.792 | INFO     | app.main:lifespan:39 - Shutting down Clove...
+2026-02-04 06:43:54.809 | INFO     | app.services.account:save_accounts:466 - Saved 2 accounts to /data/accounts.json
+2026-02-04 06:43:54.811 | INFO     | app.services.session:stop_cleanup_task:143 - Stopped session cleanup task
+2026-02-04 06:43:54.813 | INFO     | app.services.session:cleanup_all:182 - Cleaned up all sessions
+2026-02-04 06:43:54.814 | INFO     | app.services.tool_call:stop_cleanup_task:105 - Stopped tool call cleanup task
+2026-02-04 06:43:54.815 | INFO     | app.services.tool_call:cleanup_all:140 - Cleaned up all tool calls
+2026-02-04 06:43:54.816 | INFO     | app.services.cache:stop_cleanup_task:208 - Stopped cache cleanup task
+2026-02-04 06:43:54.817 | INFO     | app.services.cache:cleanup_all:244 - Cleaned up all cache checkpoints
+2026-02-04 06:43:56.633 | INFO     | app.services.account:load_accounts:496 - Loaded 2 accounts from /data/accounts.json
+2026-02-04 06:43:56.634 | INFO     | app.services.session:start_cleanup_task:133 - Started session cleanup task
+2026-02-04 06:43:56.634 | INFO     | app.services.tool_call:start_cleanup_task:95 - Started tool call cleanup task
+2026-02-04 06:43:56.634 | INFO     | app.services.cache:start_cleanup_task:198 - Started cache cleanup task
+2026-02-04 06:44:28.997 | ERROR    | app.processors.claude_ai.pipeline:process:78 - Pipeline processing failed: is_connect error: wreq::Error { kind: Request, uri: https://api.anthropic.com/v1/messages, source: Error { kind: Connect, source: Some(ConnectFailed(ConnectError("dns error", ResolveError { kind: Proto(ProtoError { kind: Timeout }) }))), connect_info: None } }
+2026-02-04 06:48:44.599 | INFO     | app.main:lifespan:39 - Shutting down Clove...
+2026-02-04 06:48:44.608 | INFO     | app.services.account:save_accounts:466 - Saved 2 accounts to /data/accounts.json
+2026-02-04 06:48:44.609 | INFO     | app.services.session:stop_cleanup_task:143 - Stopped session cleanup task
+2026-02-04 06:48:44.609 | INFO     | app.services.session:cleanup_all:182 - Cleaned up all sessions
+2026-02-04 06:48:44.610 | INFO     | app.services.tool_call:stop_cleanup_task:105 - Stopped tool call cleanup task
+2026-02-04 06:48:44.610 | INFO     | app.services.tool_call:cleanup_all:140 - Cleaned up all tool calls
+2026-02-04 06:48:44.610 | INFO     | app.services.cache:stop_cleanup_task:208 - Stopped cache cleanup task
+2026-02-04 06:48:44.611 | INFO     | app.services.cache:cleanup_all:244 - Cleaned up all cache checkpoints
+2026-02-04 06:48:46.907 | INFO     | app.services.account:load_accounts:496 - Loaded 2 accounts from /data/accounts.json
+2026-02-04 06:48:46.907 | INFO     | app.services.session:start_cleanup_task:133 - Started session cleanup task
+2026-02-04 06:48:46.908 | INFO     | app.services.tool_call:start_cleanup_task:95 - Started tool call cleanup task
+2026-02-04 06:48:46.908 | INFO     | app.services.cache:start_cleanup_task:198 - Started cache cleanup task
+2026-02-04 07:01:34.768 | ERROR    | app.processors.claude_ai.pipeline:process:78 - Pipeline processing failed: is_connect error: wreq::Error { kind: Request, uri: https://api.anthropic.com/v1/messages, source: Error { kind: Connect, source: Some(ConnectFailed(ConnectError("dns error", ResolveError { kind: Proto(ProtoError { kind: NoRecordsFound { query: Query { name: Name("host.docker.internal."), query_type: A, query_class: IN }, soa: Some(Record { name_labels: Name("."), dns_class: IN, ttl: 86396, rdata: SOA { mname: Name("a.root-servers.net."), rname: Name("nstld.verisign-grs.com."), serial: 2026020400, refresh: 1800, retry: 900, expire: 604800, minimum: 86400 } }), ns: None, negative_ttl: Some(86396), response_code: NXDomain, trusted: true, authorities: None } }) }))), connect_info: None } }
+2026-02-04 07:04:03.449 | ERROR    | app.processors.claude_ai.pipeline:process:78 - Pipeline processing failed: is_connect error: wreq::Error { kind: Request, uri: https://api.anthropic.com/v1/messages, source: Error { kind: Connect, source: Some(ConnectFailed(ConnectError("dns error", ResolveError { kind: Proto(ProtoError { kind: NoRecordsFound { query: Query { name: Name("host.docker.internal."), query_type: A, query_class: IN }, soa: Some(Record { name_labels: Name("."), dns_class: IN, ttl: 86396, rdata: SOA { mname: Name("a.root-servers.net."), rname: Name("nstld.verisign-grs.com."), serial: 2026020400, refresh: 1800, retry: 900, expire: 604800, minimum: 86400 } }), ns: None, negative_ttl: Some(86247), response_code: NXDomain, trusted: true, authorities: None } }) }))), connect_info: None } }
+2026-02-04 07:04:26.141 | ERROR    | app.processors.claude_ai.pipeline:process:78 - Pipeline processing failed: is_connect error: wreq::Error { kind: Request, uri: https://api.anthropic.com/v1/messages, source: Error { kind: Connect, source: Some(ConnectFailed(ConnectError("dns error", ResolveError { kind: Proto(ProtoError { kind: NoRecordsFound { query: Query { name: Name("host.docker.internal."), query_type: A, query_class: IN }, soa: Some(Record { name_labels: Name("."), dns_class: IN, ttl: 86396, rdata: SOA { mname: Name("a.root-servers.net."), rname: Name("nstld.verisign-grs.com."), serial: 2026020400, refresh: 1800, retry: 900, expire: 604800, minimum: 86400 } }), ns: None, negative_ttl: Some(86224), response_code: NXDomain, trusted: true, authorities: None } }) }))), connect_info: None } }
+2026-02-04 07:08:08.408 | INFO     | app.main:lifespan:39 - Shutting down Clove...
+2026-02-04 07:08:08.414 | INFO     | app.services.account:save_accounts:466 - Saved 2 accounts to /data/accounts.json
+2026-02-04 07:08:08.415 | INFO     | app.services.session:stop_cleanup_task:143 - Stopped session cleanup task
+2026-02-04 07:08:08.415 | INFO     | app.services.session:cleanup_all:182 - Cleaned up all sessions
+2026-02-04 07:08:08.415 | INFO     | app.services.tool_call:stop_cleanup_task:105 - Stopped tool call cleanup task
+2026-02-04 07:08:08.416 | INFO     | app.services.tool_call:cleanup_all:140 - Cleaned up all tool calls
+2026-02-04 07:08:08.416 | INFO     | app.services.cache:stop_cleanup_task:208 - Stopped cache cleanup task
+2026-02-04 07:08:08.416 | INFO     | app.services.cache:cleanup_all:244 - Cleaned up all cache checkpoints
+2026-02-04 07:08:10.489 | INFO     | app.services.account:load_accounts:496 - Loaded 2 accounts from /data/accounts.json
+2026-02-04 07:08:10.490 | INFO     | app.services.session:start_cleanup_task:133 - Started session cleanup task
+2026-02-04 07:08:10.490 | INFO     | app.services.tool_call:start_cleanup_task:95 - Started tool call cleanup task
+2026-02-04 07:08:10.490 | INFO     | app.services.cache:start_cleanup_task:198 - Started cache cleanup task
+2026-02-04 07:08:24.544 | ERROR    | app.processors.claude_ai.pipeline:process:78 - Pipeline processing failed: is_builder error: wreq::Error { kind: Builder, source: InvalidUri(InvalidScheme) }
+2026-02-04 07:09:34.288 | INFO     | app.main:lifespan:39 - Shutting down Clove...
+2026-02-04 07:09:34.298 | INFO     | app.services.account:save_accounts:466 - Saved 2 accounts to /data/accounts.json
+2026-02-04 07:09:34.299 | INFO     | app.services.session:stop_cleanup_task:143 - Stopped session cleanup task
+2026-02-04 07:09:34.301 | INFO     | app.services.session:cleanup_all:182 - Cleaned up all sessions
+2026-02-04 07:09:34.302 | INFO     | app.services.tool_call:stop_cleanup_task:105 - Stopped tool call cleanup task
+2026-02-04 07:09:34.302 | INFO     | app.services.tool_call:cleanup_all:140 - Cleaned up all tool calls
+2026-02-04 07:09:34.303 | INFO     | app.services.cache:stop_cleanup_task:208 - Stopped cache cleanup task
+2026-02-04 07:09:34.303 | INFO     | app.services.cache:cleanup_all:244 - Cleaned up all cache checkpoints
+2026-02-04 07:09:35.965 | INFO     | app.services.account:load_accounts:496 - Loaded 2 accounts from /data/accounts.json
+2026-02-04 07:09:35.966 | INFO     | app.services.session:start_cleanup_task:133 - Started session cleanup task
+2026-02-04 07:09:35.966 | INFO     | app.services.tool_call:start_cleanup_task:95 - Started tool call cleanup task
+2026-02-04 07:09:35.966 | INFO     | app.services.cache:start_cleanup_task:198 - Started cache cleanup task
+2026-02-04 07:09:44.542 | ERROR    | app.processors.claude_ai.claude_api_processor:process:145 - Claude API error: 404 - {'type': 'error', 'error': {'type': 'not_found_error', 'message': 'model: claude-3-opus-20240229'}, 'request_id': 'req_011CXncLKU9D2XE9mbL4AUN2'}
+2026-02-04 07:09:44.543 | ERROR    | app.processors.claude_ai.pipeline:process:78 - Pipeline processing failed: ClaudeHttpError(error_code=503130, message_key='claudeClient.httpError', status_code=404, context={'url': 'https://api.anthropic.com/v1/messages', 'status_code': 404, 'error_type': 'not_found_error', 'error_message': 'model: claude-3-opus-20240229'})
+2026-02-04 07:09:44.544 | WARNING  | app.utils.retry:log_before_sleep:19 - Retrying create_message after attempt 1 due to ClaudeHttpError: ClaudeHttpError(error_code=503130, message_key='claudeClient.httpError', status_code=404, context={'url': 'https://api.anthropic.com/v1/messages', 'status_code': 404, 'error_type': 'not_found_error', 'error_message': 'model: claude-3-opus-20240229'})
+2026-02-04 07:09:46.232 | ERROR    | app.processors.claude_ai.claude_api_processor:process:145 - Claude API error: 404 - {'type': 'error', 'error': {'type': 'not_found_error', 'message': 'model: claude-3-opus-20240229'}, 'request_id': 'req_011CXncLSbWfwAF5Awit9S6m'}
+2026-02-04 07:09:46.234 | ERROR    | app.processors.claude_ai.pipeline:process:78 - Pipeline processing failed: ClaudeHttpError(error_code=503130, message_key='claudeClient.httpError', status_code=404, context={'url': 'https://api.anthropic.com/v1/messages', 'status_code': 404, 'error_type': 'not_found_error', 'error_message': 'model: claude-3-opus-20240229'})
+2026-02-04 07:09:46.235 | WARNING  | app.utils.retry:log_before_sleep:19 - Retrying create_message after attempt 2 due to ClaudeHttpError: ClaudeHttpError(error_code=503130, message_key='claudeClient.httpError', status_code=404, context={'url': 'https://api.anthropic.com/v1/messages', 'status_code': 404, 'error_type': 'not_found_error', 'error_message': 'model: claude-3-opus-20240229'})
+2026-02-04 07:09:47.871 | ERROR    | app.processors.claude_ai.claude_api_processor:process:145 - Claude API error: 404 - {'type': 'error', 'error': {'type': 'not_found_error', 'message': 'model: claude-3-opus-20240229'}, 'request_id': 'req_011CXncLZzWS8VaJK7dDLc8y'}
+2026-02-04 07:09:47.872 | ERROR    | app.processors.claude_ai.pipeline:process:78 - Pipeline processing failed: ClaudeHttpError(error_code=503130, message_key='claudeClient.httpError', status_code=404, context={'url': 'https://api.anthropic.com/v1/messages', 'status_code': 404, 'error_type': 'not_found_error', 'error_message': 'model: claude-3-opus-20240229'})
+2026-02-04 07:09:47.874 | WARNING  | app.core.error_handler:handle_app_exception:71 - AppException: ClaudeHttpError - Code: 503130, Message: HTTP error occurred when calling Claude AI: not_found_error - model: claude-3-opus-20240229 (Status: 404), Context: {'url': 'https://api.anthropic.com/v1/messages', 'status_code': 404, 'error_type': 'not_found_error', 'error_message': 'model: claude-3-opus-20240229'}
+2026-02-04 07:13:48.000 | INFO     | app.main:lifespan:39 - Shutting down Clove...
+2026-02-04 07:13:48.009 | INFO     | app.services.account:save_accounts:466 - Saved 2 accounts to /data/accounts.json
+2026-02-04 07:13:48.010 | INFO     | app.services.session:stop_cleanup_task:143 - Stopped session cleanup task
+2026-02-04 07:13:48.010 | INFO     | app.services.session:cleanup_all:182 - Cleaned up all sessions
+2026-02-04 07:13:48.011 | INFO     | app.services.tool_call:stop_cleanup_task:105 - Stopped tool call cleanup task
+2026-02-04 07:13:48.011 | INFO     | app.services.tool_call:cleanup_all:140 - Cleaned up all tool calls
+2026-02-04 07:13:48.011 | INFO     | app.services.cache:stop_cleanup_task:208 - Stopped cache cleanup task
+2026-02-04 07:13:48.012 | INFO     | app.services.cache:cleanup_all:244 - Cleaned up all cache checkpoints
+2026-02-04 07:13:57.620 | INFO     | app.services.account:load_accounts:496 - Loaded 2 accounts from /data/accounts.json
+2026-02-04 07:13:57.621 | INFO     | app.services.session:start_cleanup_task:133 - Started session cleanup task
+2026-02-04 07:13:57.621 | INFO     | app.services.tool_call:start_cleanup_task:95 - Started tool call cleanup task
+2026-02-04 07:13:57.622 | INFO     | app.services.cache:start_cleanup_task:198 - Started cache cleanup task
+2026-02-04 07:16:20.305 | INFO     | app.main:lifespan:39 - Shutting down Clove...
+2026-02-04 07:16:20.325 | INFO     | app.services.account:save_accounts:466 - Saved 2 accounts to /data/accounts.json
+2026-02-04 07:16:20.327 | INFO     | app.services.session:stop_cleanup_task:143 - Stopped session cleanup task
+2026-02-04 07:16:20.329 | INFO     | app.services.session:cleanup_all:182 - Cleaned up all sessions
+2026-02-04 07:16:20.329 | INFO     | app.services.tool_call:stop_cleanup_task:105 - Stopped tool call cleanup task
+2026-02-04 07:16:20.330 | INFO     | app.services.tool_call:cleanup_all:140 - Cleaned up all tool calls
+2026-02-04 07:16:20.331 | INFO     | app.services.cache:stop_cleanup_task:208 - Stopped cache cleanup task
+2026-02-04 07:16:20.331 | INFO     | app.services.cache:cleanup_all:244 - Cleaned up all cache checkpoints
+2026-02-04 07:16:22.415 | INFO     | app.services.account:load_accounts:496 - Loaded 2 accounts from /data/accounts.json
+2026-02-04 07:16:22.416 | INFO     | app.services.session:start_cleanup_task:133 - Started session cleanup task
+2026-02-04 07:16:22.416 | INFO     | app.services.tool_call:start_cleanup_task:95 - Started tool call cleanup task
+2026-02-04 07:16:22.416 | INFO     | app.services.cache:start_cleanup_task:198 - Started cache cleanup task
+2026-02-04 07:16:36.289 | ERROR    | app.processors.claude_ai.claude_api_processor:process:145 - Claude API error: 404 - {'type': 'error', 'error': {'type': 'not_found_error', 'message': 'model: claude-3-opus-20240229'}, 'request_id': 'req_011CXncrg8wDjwtB2a8SspnT'}
+2026-02-04 07:16:36.290 | ERROR    | app.processors.claude_ai.pipeline:process:78 - Pipeline processing failed: ClaudeHttpError(error_code=503130, message_key='claudeClient.httpError', status_code=404, context={'url': 'https://api.anthropic.com/v1/messages', 'status_code': 404, 'error_type': 'not_found_error', 'error_message': 'model: claude-3-opus-20240229'})
+2026-02-04 07:16:36.290 | WARNING  | app.utils.retry:log_before_sleep:19 - Retrying create_message after attempt 1 due to ClaudeHttpError: ClaudeHttpError(error_code=503130, message_key='claudeClient.httpError', status_code=404, context={'url': 'https://api.anthropic.com/v1/messages', 'status_code': 404, 'error_type': 'not_found_error', 'error_message': 'model: claude-3-opus-20240229'})
+2026-02-04 07:16:37.883 | ERROR    | app.processors.claude_ai.claude_api_processor:process:145 - Claude API error: 404 - {'type': 'error', 'error': {'type': 'not_found_error', 'message': 'model: claude-3-opus-20240229'}, 'request_id': 'req_011CXncrnr1VQeQKQTAbu9PP'}
+2026-02-04 07:16:37.884 | ERROR    | app.processors.claude_ai.pipeline:process:78 - Pipeline processing failed: ClaudeHttpError(error_code=503130, message_key='claudeClient.httpError', status_code=404, context={'url': 'https://api.anthropic.com/v1/messages', 'status_code': 404, 'error_type': 'not_found_error', 'error_message': 'model: claude-3-opus-20240229'})
+2026-02-04 07:16:37.884 | WARNING  | app.utils.retry:log_before_sleep:19 - Retrying create_message after attempt 2 due to ClaudeHttpError: ClaudeHttpError(error_code=503130, message_key='claudeClient.httpError', status_code=404, context={'url': 'https://api.anthropic.com/v1/messages', 'status_code': 404, 'error_type': 'not_found_error', 'error_message': 'model: claude-3-opus-20240229'})
+2026-02-04 07:16:39.682 | ERROR    | app.processors.claude_ai.claude_api_processor:process:145 - Claude API error: 404 - {'type': 'error', 'error': {'type': 'not_found_error', 'message': 'model: claude-3-opus-20240229'}, 'request_id': 'req_011CXncruiWChqmiFuCNxxVq'}
+2026-02-04 07:16:39.683 | ERROR    | app.processors.claude_ai.pipeline:process:78 - Pipeline processing failed: ClaudeHttpError(error_code=503130, message_key='claudeClient.httpError', status_code=404, context={'url': 'https://api.anthropic.com/v1/messages', 'status_code': 404, 'error_type': 'not_found_error', 'error_message': 'model: claude-3-opus-20240229'})
+2026-02-04 07:16:39.684 | WARNING  | app.core.error_handler:handle_app_exception:71 - AppException: ClaudeHttpError - Code: 503130, Message: HTTP error occurred when calling Claude AI: not_found_error - model: claude-3-opus-20240229 (Status: 404), Context: {'url': 'https://api.anthropic.com/v1/messages', 'status_code': 404, 'error_type': 'not_found_error', 'error_message': 'model: claude-3-opus-20240229'}
+2026-02-04 07:16:58.557 | INFO     | app.main:lifespan:39 - Shutting down Clove...
+2026-02-04 07:16:58.568 | INFO     | app.services.account:save_accounts:466 - Saved 2 accounts to /data/accounts.json
+2026-02-04 07:16:58.569 | INFO     | app.services.session:stop_cleanup_task:143 - Stopped session cleanup task
+2026-02-04 07:16:58.570 | INFO     | app.services.session:cleanup_all:182 - Cleaned up all sessions
+2026-02-04 07:16:58.570 | INFO     | app.services.tool_call:stop_cleanup_task:105 - Stopped tool call cleanup task
+2026-02-04 07:16:58.571 | INFO     | app.services.tool_call:cleanup_all:140 - Cleaned up all tool calls
+2026-02-04 07:16:58.571 | INFO     | app.services.cache:stop_cleanup_task:208 - Stopped cache cleanup task
+2026-02-04 07:16:58.572 | INFO     | app.services.cache:cleanup_all:244 - Cleaned up all cache checkpoints
+2026-02-04 07:17:03.206 | INFO     | app.services.account:load_accounts:496 - Loaded 2 accounts from /data/accounts.json
+2026-02-04 07:17:03.207 | INFO     | app.services.session:start_cleanup_task:133 - Started session cleanup task
+2026-02-04 07:17:03.207 | INFO     | app.services.tool_call:start_cleanup_task:95 - Started tool call cleanup task
+2026-02-04 07:17:03.208 | INFO     | app.services.cache:start_cleanup_task:198 - Started cache cleanup task
+2026-02-04 07:17:11.747 | ERROR    | app.processors.claude_ai.claude_api_processor:process:145 - Claude API error: 404 - {'type': 'error', 'error': {'type': 'not_found_error', 'message': 'model: claude-3-opus-20240229'}, 'request_id': 'req_011CXncuHjseDz19CLLkjdYG'}
+2026-02-04 07:17:11.748 | ERROR    | app.processors.claude_ai.pipeline:process:78 - Pipeline processing failed: ClaudeHttpError(error_code=503130, message_key='claudeClient.httpError', status_code=404, context={'url': 'https://api.anthropic.com/v1/messages', 'status_code': 404, 'error_type': 'not_found_error', 'error_message': 'model: claude-3-opus-20240229'})
+2026-02-04 07:17:11.749 | WARNING  | app.utils.retry:log_before_sleep:19 - Retrying create_message after attempt 1 due to ClaudeHttpError: ClaudeHttpError(error_code=503130, message_key='claudeClient.httpError', status_code=404, context={'url': 'https://api.anthropic.com/v1/messages', 'status_code': 404, 'error_type': 'not_found_error', 'error_message': 'model: claude-3-opus-20240229'})
+2026-02-04 07:17:13.264 | ERROR    | app.processors.claude_ai.claude_api_processor:process:145 - Claude API error: 404 - {'type': 'error', 'error': {'type': 'not_found_error', 'message': 'model: claude-3-opus-20240229'}, 'request_id': 'req_011CXncuQEJL7MydScojvWwe'}
+2026-02-04 07:17:13.265 | ERROR    | app.processors.claude_ai.pipeline:process:78 - Pipeline processing failed: ClaudeHttpError(error_code=503130, message_key='claudeClient.httpError', status_code=404, context={'url': 'https://api.anthropic.com/v1/messages', 'status_code': 404, 'error_type': 'not_found_error', 'error_message': 'model: claude-3-opus-20240229'})
+2026-02-04 07:17:13.266 | WARNING  | app.utils.retry:log_before_sleep:19 - Retrying create_message after attempt 2 due to ClaudeHttpError: ClaudeHttpError(error_code=503130, message_key='claudeClient.httpError', status_code=404, context={'url': 'https://api.anthropic.com/v1/messages', 'status_code': 404, 'error_type': 'not_found_error', 'error_message': 'model: claude-3-opus-20240229'})
+2026-02-04 07:17:14.837 | ERROR    | app.processors.claude_ai.claude_api_processor:process:145 - Claude API error: 404 - {'type': 'error', 'error': {'type': 'not_found_error', 'message': 'model: claude-3-opus-20240229'}, 'request_id': 'req_011CXncuWrAk635jBHGUWrxA'}
+2026-02-04 07:17:14.838 | ERROR    | app.processors.claude_ai.pipeline:process:78 - Pipeline processing failed: ClaudeHttpError(error_code=503130, message_key='claudeClient.httpError', status_code=404, context={'url': 'https://api.anthropic.com/v1/messages', 'status_code': 404, 'error_type': 'not_found_error', 'error_message': 'model: claude-3-opus-20240229'})
+2026-02-04 07:17:14.839 | WARNING  | app.core.error_handler:handle_app_exception:71 - AppException: ClaudeHttpError - Code: 503130, Message: HTTP error occurred when calling Claude AI: not_found_error - model: claude-3-opus-20240229 (Status: 404), Context: {'url': 'https://api.anthropic.com/v1/messages', 'status_code': 404, 'error_type': 'not_found_error', 'error_message': 'model: claude-3-opus-20240229'}

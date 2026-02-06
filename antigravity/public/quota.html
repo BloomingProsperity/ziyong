@@ -1,0 +1,2386 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dashboard</title>
+    <link rel="icon"
+        href="https://t0.gstatic.com/faviconV2?client=SOCIAL&type=FAVICON&fallback_opts=TYPE,SIZE,URL&url=http://antigravity.google&size=32"
+        type="image/x-icon">
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.1"></script>
+    <style>
+        :root {
+            --anti-blue: #4796E3;
+            --anti-purple: #6b4da3;
+            --copilot-red: #f85149;
+            --claude-orange: #DA7756;
+            --white-glow: #ffffff;
+            --dark-purple: #3b2a54;
+            --pure-black: #000000;
+            --warm-dark: #262624;
+        }
+
+        body {
+            background: var(--pure-black);
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+        }
+
+        @media (prefers-color-scheme: light) {
+            body {
+                background: var(--warm-dark);
+            }
+        }
+
+        @media (prefers-color-scheme: light) {
+            .card-inner {
+                background: rgba(50, 50, 48, 0.9);
+            }
+
+            .refresh-btn button,
+            .refresh-btn a {
+                background: rgba(50, 50, 48, 0.9);
+            }
+
+            #copy-toast {
+                background: rgba(50, 50, 48, 0.95);
+            }
+
+            .bg-gray-900 {
+                background-color: rgba(30, 30, 28, 0.8) !important;
+            }
+        }
+
+
+
+        .card-3d {
+            perspective: 1000px;
+            cursor: pointer;
+        }
+
+        .card-3d button,
+        .card-3d a,
+        .card-3d input {
+            cursor: pointer;
+        }
+
+        .card-inner {
+            transform-style: preserve-3d;
+            transition: box-shadow 0.3s ease, background 0.3s ease, border-color 0.3s ease;
+            background: transparent;
+            border: 1px solid rgba(55, 65, 81, 0.5);
+        }
+
+        .provider-logo {
+            width: 18px;
+            height: 18px;
+            display: block;
+            flex-shrink: 0;
+        }
+
+        .provider-logo--codex {
+            color: var(--white-glow);
+        }
+
+        .provider-logo--copilot {
+            color: #9ca3af;
+        }
+
+        .provider-logo--fallback {
+            font-size: 10px;
+            text-transform: uppercase;
+            letter-spacing: 0.2em;
+            color: #6b7280;
+        }
+
+        /* Antigravity - 蓝紫色背景光晕 */
+        .card-3d[data-provider="antigravity"].active .card-inner {
+            background: rgba(71, 150, 227, 0.16);
+            border-color: var(--anti-blue);
+            animation: antigravity-breathe 2s ease-in-out infinite;
+        }
+
+        @keyframes antigravity-breathe {
+
+            0%,
+            100% {
+                box-shadow: 0 0 20px rgba(71, 150, 227, 0.45),
+                    0 0 40px rgba(107, 77, 163, 0.25);
+            }
+
+            50% {
+                box-shadow: 0 0 36px rgba(71, 150, 227, 0.7),
+                    0 0 70px rgba(107, 77, 163, 0.4);
+            }
+        }
+
+        /* Codex - 白色背景光晕 */
+        .card-3d[data-provider="codex"].active .card-inner {
+            background: rgba(255, 255, 255, 0.12);
+            border-color: var(--white-glow);
+            animation: codex-breathe 2s ease-in-out infinite;
+        }
+
+        @keyframes codex-breathe {
+
+            0%,
+            100% {
+                box-shadow: 0 0 18px rgba(255, 255, 255, 0.35),
+                    0 0 36px rgba(255, 255, 255, 0.15);
+            }
+
+            50% {
+                box-shadow: 0 0 32px rgba(255, 255, 255, 0.65),
+                    0 0 60px rgba(255, 255, 255, 0.35);
+            }
+        }
+
+        /* Copilot - 红色背景光晕 */
+        .card-3d[data-provider="copilot"].active .card-inner {
+            background: rgba(248, 81, 73, 0.14);
+            border-color: var(--copilot-red);
+            animation: copilot-breathe 2s ease-in-out infinite;
+        }
+
+        @keyframes copilot-breathe {
+
+            0%,
+            100% {
+                box-shadow: 0 0 18px rgba(248, 81, 73, 0.35),
+                    0 0 38px rgba(248, 81, 73, 0.2);
+            }
+
+            50% {
+                box-shadow: 0 0 34px rgba(248, 81, 73, 0.65),
+                    0 0 68px rgba(248, 81, 73, 0.35);
+            }
+        }
+
+        @keyframes claude-breathe {
+
+            0%,
+            100% {
+                box-shadow: 0 0 20px rgba(218, 119, 86, 0.4),
+                    0 0 40px rgba(218, 119, 86, 0.2);
+            }
+
+            50% {
+                box-shadow: 0 0 35px rgba(218, 119, 86, 0.7),
+                    0 0 70px rgba(218, 119, 86, 0.4);
+            }
+        }
+
+        /* Refresh 按钮 - 白色霓虹 */
+        .refresh-btn {
+            perspective: 1000px;
+        }
+
+        .refresh-btn button {
+            transform-style: preserve-3d;
+            transition: box-shadow 0.3s ease, background 0.3s ease, border-color 0.3s ease;
+            background: rgba(17, 17, 17, 0.9);
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(59, 42, 84, 0.3);
+        }
+
+        /* Log out 按钮 - Claude 橙色霓虹 */
+        #logout-container.active button {
+            background: rgba(218, 119, 86, 0.15);
+            border-color: var(--claude-orange);
+            backdrop-filter: blur(20px);
+            animation: claude-breathe 2s ease-in-out infinite;
+        }
+
+        /* Remote 按钮 - Antigravity 蓝色霓虹 */
+        #remote-btn:hover {
+            background: rgba(71, 150, 227, 0.15);
+            border-color: var(--anti-blue);
+            backdrop-filter: blur(20px);
+            box-shadow: 0 0 20px rgba(71, 150, 227, 0.4),
+                0 0 40px rgba(71, 150, 227, 0.2);
+        }
+
+        /* Refresh 按钮 - 白色霓虹 */
+        #refresh-btn:hover {
+            background: rgba(255, 255, 255, 0.15);
+            border-color: var(--white-glow);
+            backdrop-filter: blur(20px);
+            box-shadow: 0 0 20px rgba(255, 255, 255, 0.4),
+                0 0 40px rgba(255, 255, 255, 0.2);
+        }
+
+        /* Routing 按钮 - 紫色霓虹 */
+        #routing-btn:hover {
+            background: rgba(107, 77, 163, 0.18);
+            border-color: var(--anti-purple);
+            backdrop-filter: blur(20px);
+            box-shadow: 0 0 20px rgba(107, 77, 163, 0.45),
+                0 0 42px rgba(107, 77, 163, 0.25);
+        }
+
+        /* Add 按钮 - 绿色霓虹 */
+        #add-account-btn:hover {
+            background: rgba(34, 197, 94, 0.18);
+            border-color: rgba(34, 197, 94, 0.7);
+            backdrop-filter: blur(20px);
+            box-shadow: 0 0 20px rgba(34, 197, 94, 0.45),
+                0 0 42px rgba(34, 197, 94, 0.25);
+        }
+
+        .progress-bar {
+            background: white;
+            transition: all 0.3s ease;
+        }
+
+        .antigravity-bar {
+            background: linear-gradient(90deg, var(--anti-blue), var(--anti-purple));
+            box-shadow: 0 0 14px rgba(71, 150, 227, 0.6);
+        }
+
+        .codex-bar {
+            background: linear-gradient(90deg, #e6e6e6, #bdbdbd);
+            box-shadow: 0 0 10px rgba(255, 255, 255, 0.35);
+        }
+
+        .copilot-bar {
+            background: linear-gradient(90deg, #f85149, #ff938b);
+            box-shadow: 0 0 12px rgba(248, 81, 73, 0.6);
+        }
+
+        .loading-screen {
+            position: fixed;
+            inset: 0;
+            background: #000;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            z-index: 100;
+            transition: opacity 0.3s ease;
+        }
+
+        .loading-screen.hidden {
+            opacity: 0;
+            pointer-events: none;
+        }
+
+        .loading-spinner {
+            width: 42px;
+            height: 42px;
+            border-radius: 999px;
+            border: 2px solid rgba(255, 255, 255, 0.15);
+            border-top-color: var(--anti-blue);
+            animation: spin 0.9s linear infinite;
+        }
+
+        @keyframes spin {
+            to {
+                transform: rotate(360deg);
+            }
+        }
+
+
+        /* Toggle Switch */
+        .toggle-switch {
+            appearance: none;
+            width: 44px;
+            height: 24px;
+            background: #333;
+            border-radius: 12px;
+            position: relative;
+            cursor: pointer;
+            transition: background 0.3s;
+            flex-shrink: 0;
+        }
+
+        .toggle-switch::before {
+            content: '';
+            position: absolute;
+            top: 2px;
+            left: 2px;
+            width: 20px;
+            height: 20px;
+            background: #666;
+            border-radius: 50%;
+            transition: all 0.3s;
+        }
+
+        .toggle-switch:checked {
+            background: linear-gradient(135deg, #22d3ee, #3b82f6);
+        }
+
+        .toggle-switch:checked::before {
+            left: 22px;
+            background: white;
+        }
+    </style>
+</head>
+
+<body class="min-h-screen p-6">
+    <div id="loading-screen" class="loading-screen">
+        <div class="loading-spinner"></div>
+    </div>
+    <!-- Main Content -->
+    <div class="max-w-6xl mx-auto">
+        <!-- Tab Navigation -->
+        <div class="flex items-center gap-1 mb-6">
+            <button onclick="switchTab('quota')" id="tab-quota"
+                class="tab-btn px-5 py-2 rounded-lg font-bold text-sm transition-all duration-200 text-white bg-gradient-to-r from-cyan-500/30 to-blue-500/30 border border-cyan-500/50">
+                Quota
+            </button>
+            <button onclick="switchTab('usage')" id="tab-usage"
+                class="tab-btn px-5 py-2 rounded-lg font-bold text-sm transition-all duration-200 text-gray-400 hover:text-gray-200 hidden">
+                Usage
+            </button>
+            <button onclick="switchTab('remote')" id="tab-remote"
+                class="tab-btn px-5 py-2 rounded-lg font-bold text-sm transition-all duration-200 text-gray-400 hover:text-gray-200">
+                Remote
+            </button>
+            <button onclick="switchTab('routing')" id="tab-routing"
+                class="tab-btn px-5 py-2 rounded-lg font-bold text-sm transition-all duration-200 text-gray-400 hover:text-gray-200">
+                Routing <span class="text-[10px] text-gray-500">(Beta)</span>
+            </button>
+            <button onclick="switchTab('logs')" id="tab-logs"
+                class="tab-btn px-5 py-2 rounded-lg font-bold text-sm transition-all duration-200 text-gray-400 hover:text-gray-200">
+                Logs
+            </button>
+            <button onclick="switchTab('settings')" id="tab-settings"
+                class="tab-btn px-5 py-2 rounded-lg font-bold text-sm transition-all duration-200 text-gray-400 hover:text-gray-200">
+                Settings
+            </button>
+        </div>
+
+        <!-- Toast -->
+        <div id="copy-toast"
+            class="fixed bottom-32 right-8 bg-gray-800 text-gray-300 px-4 py-2 rounded-lg text-sm opacity-0 translate-x-8 transition-all duration-300 pointer-events-none z-50">
+            Copied!</div>
+
+        <!-- ==================== QUOTA TAB ==================== -->
+        <div id="tab-content-quota" class="tab-content">
+            <!-- Quota Header -->
+            <div class="mb-6 flex items-start justify-between">
+                <div>
+                    <h1 class="text-3xl font-bold text-gray-300">Quota</h1>
+                    <p id="plan-info" class="text-gray-500 text-sm font-bold mt-1">Loading...</p>
+                </div>
+                <div class="flex flex-col items-end gap-2">
+                    <div class="flex items-center gap-3">
+                        <div class="refresh-btn inline-block" id="add-account-container">
+                            <button onclick="openAddAccountModal()" id="add-account-btn"
+                                class="px-4 py-1.5 rounded-lg font-bold text-gray-300 text-sm">
+                                Add
+                            </button>
+                        </div>
+                        <div class="refresh-btn inline-block" id="refresh-container">
+                            <button onclick="refreshAll(true)" id="refresh-btn"
+                                class="px-4 py-1.5 rounded-lg font-bold text-gray-300 text-sm">
+                                Refresh
+                            </button>
+                        </div>
+                    </div>
+                    <p id="last-updated" class="text-gray-600 text-xs text-right"></p>
+                </div>
+            </div>
+
+            <!-- Quota Grid -->
+            <div id="quota-grid" class="space-y-6">
+                <!-- Loading placeholder -->
+                <div class="grid grid-cols-2 sm:grid-cols-4 gap-4">
+                    <div class="card-3d">
+                        <div class="card-inner rounded-lg p-4 animate-pulse">
+                            <div class="h-3 bg-gray-800 rounded w-1/2 mb-3"></div>
+                            <div class="h-6 bg-gray-800 rounded w-2/3"></div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- ==================== USAGE TAB ==================== -->
+        <div id="tab-content-usage" class="tab-content hidden">
+            <div class="mb-8 flex items-start justify-between">
+                <div>
+                    <h1 class="text-3xl font-bold text-gray-300">Usage Statistics</h1>
+                    <p class="text-gray-500 text-sm mt-1 font-bold">Token consumption and estimated cost</p>
+                </div>
+                <div class="refresh-btn inline-block">
+                    <button onclick="fetchUsageData()" class="px-4 py-1.5 rounded-lg font-bold text-gray-300 text-sm">
+                        Refresh
+                    </button>
+                </div>
+            </div>
+
+            <!-- Top Row: Daily Usage (wider) + Cost Card (narrower, taller) -->
+            <div class="grid grid-cols-1 md:grid-cols-5 gap-6 mb-8">
+                <!-- Daily Usage Chart (3/5 width) -->
+                <div class="md:col-span-3 rounded-xl border border-gray-800 p-5">
+                    <div class="text-base font-bold text-gray-300 mb-4">Daily Usage</div>
+                    <div style="height: 200px; max-height: 200px;">
+                        <canvas id="daily-chart"></canvas>
+                    </div>
+                </div>
+
+                <!-- Combined Cost Card (2/5 width, taller) -->
+                <div class="md:col-span-2 rounded-xl border border-gray-800 p-6 flex flex-col justify-center"
+                    style="min-height: 240px;">
+                    <div class="space-y-6">
+                        <div class="text-center">
+                            <div class="text-gray-400 text-base mb-3">Today Cost</div>
+                            <div id="usage-today-cost" class="text-4xl font-bold text-cyan-400">$0.00</div>
+                            <div id="usage-today-tokens" class="text-[11px] text-gray-500 mt-2 hidden">0 tokens</div>
+                        </div>
+                        <div class="text-center border-t border-gray-700 pt-6">
+                            <div class="text-gray-400 text-base mb-3">Total Cost</div>
+                            <div id="usage-total-large" class="text-4xl font-bold text-cyan-400">$0.00</div>
+                            <div id="usage-total-tokens" class="text-[11px] text-gray-500 mt-2">0 tokens</div>
+                        </div>
+                    </div>
+                    <div class="text-[10px] text-gray-600 mt-5 text-center">Based on public API pricing</div>
+                </div>
+            </div>
+
+            <!-- Model Distribution with integrated breakdown -->
+            <div class="rounded-xl border border-gray-800 p-5">
+                <div class="text-sm font-bold text-gray-300 mb-4">Model Distribution</div>
+                <div class="flex flex-col md:flex-row md:items-center gap-10 py-4">
+                    <!-- Chart on left -->
+                    <div class="flex-shrink-0 ml-4" style="width: 240px; height: 240px;">
+                        <canvas id="model-chart"></canvas>
+                    </div>
+                    <!-- Model details on right -->
+                    <div id="usage-model-list" class="flex-1 space-y-1 flex flex-col">
+                        <div class="text-gray-500 text-sm text-center py-4">No usage data yet</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- ==================== REMOTE TAB ==================== -->
+        <div id="tab-content-remote" class="tab-content hidden">
+            <iframe id="remote-iframe" class="w-full border-0 bg-black"
+                style="height: calc(100vh - 160px); min-height: 500px;"></iframe>
+        </div>
+
+        <!-- ==================== ROUTING TAB ==================== -->
+        <div id="tab-content-routing" class="tab-content hidden">
+            <iframe id="routing-iframe" class="w-full border-0 bg-black"
+                style="height: calc(100vh - 160px); min-height: 500px;"></iframe>
+        </div>
+
+        <!-- ==================== LOGS TAB ==================== -->
+        <div id="tab-content-logs" class="tab-content hidden">
+            <div class="mb-6 flex items-start justify-between">
+                <div>
+                    <h1 class="text-2xl font-bold text-gray-300">Logs</h1>
+                    <p class="text-gray-500 text-sm font-bold mt-1">Live server output (recent lines only)</p>
+                </div>
+                <div class="flex items-center gap-2">
+                    <span id="logs-status" class="text-xs text-gray-500">Disconnected</span>
+                </div>
+            </div>
+
+            <div class="flex flex-wrap items-center gap-3 mb-4">
+                <div class="refresh-btn inline-block">
+                    <button onclick="refreshLogs()" id="logs-refresh"
+                        class="px-4 py-1.5 rounded-lg font-bold text-gray-300 text-sm">
+                        Reload
+                    </button>
+                </div>
+                <div class="refresh-btn inline-block">
+                    <button onclick="toggleLogsPause()" id="logs-toggle"
+                        class="px-4 py-1.5 rounded-lg font-bold text-gray-300 text-sm">
+                        Pause
+                    </button>
+                </div>
+                <div class="refresh-btn inline-block">
+                    <button onclick="clearLogView()" id="logs-clear"
+                        class="px-4 py-1.5 rounded-lg font-bold text-gray-300 text-sm">
+                        Clear
+                    </button>
+                </div>
+                <label class="flex items-center gap-2 text-xs text-gray-500">
+                    <input type="checkbox" id="logs-follow" checked>
+                    Follow
+                </label>
+            </div>
+
+            <div class="rounded-xl border border-gray-800 bg-black/40 p-4">
+                <div id="log-view"
+                    class="h-[560px] overflow-auto font-mono text-xs text-gray-300 leading-6 whitespace-pre-wrap">
+                </div>
+            </div>
+        </div>
+
+        <!-- ==================== SETTINGS TAB ==================== -->
+        <div id="tab-content-settings" class="tab-content hidden">
+            <div class="mb-6">
+                <h1 class="text-2xl font-bold text-gray-300">Settings</h1>
+                <p class="text-gray-500 text-sm font-bold mt-1">Configure application behavior</p>
+            </div>
+
+            <div class="grid grid-cols-1 gap-4 max-w-5xl lg:grid-cols-3">
+                <div class="space-y-4">
+                    <!-- Preload Routing -->
+                    <label
+                        class="flex items-center justify-between p-4 rounded-xl border border-gray-800 hover:border-gray-700 transition-colors cursor-pointer">
+                        <div>
+                            <div class="text-gray-200 font-medium">Preload Routing</div>
+                            <div class="text-gray-500 text-xs mt-0.5">Load Routing tab in background for instant
+                                switching
+                            </div>
+                        </div>
+                        <input type="checkbox" id="setting-preload-routing" class="toggle-switch" checked>
+                    </label>
+
+                    <!-- Auto Start ngrok -->
+                    <label
+                        class="flex items-center justify-between p-4 rounded-xl border border-gray-800 hover:border-gray-700 transition-colors cursor-pointer">
+                        <div>
+                            <div class="text-gray-200 font-medium">Auto Start ngrok</div>
+                            <div class="text-gray-500 text-xs mt-0.5">Automatically start ngrok tunnel on server launch
+                            </div>
+                        </div>
+                        <input type="checkbox" id="setting-auto-ngrok" class="toggle-switch">
+                    </label>
+
+                    <!-- Auto Open Dashboard -->
+                    <label
+                        class="flex items-center justify-between p-4 rounded-xl border border-gray-800 hover:border-gray-700 transition-colors cursor-pointer">
+                        <div>
+                            <div class="text-gray-200 font-medium">Auto Open Dashboard</div>
+                            <div class="text-gray-500 text-xs mt-0.5">Open browser to Dashboard on server start</div>
+                        </div>
+                        <input type="checkbox" id="setting-auto-open" class="toggle-switch" checked>
+                    </label>
+                </div>
+
+                <div class="space-y-4">
+                    <!-- Auto Refresh -->
+                    <label
+                        class="flex items-center justify-between p-4 rounded-xl border border-gray-800 hover:border-gray-700 transition-colors cursor-pointer">
+                        <div>
+                            <div class="text-gray-200 font-medium">Auto Refresh Quota</div>
+                            <div class="text-gray-500 text-xs mt-0.5">Automatically refresh quota and usage every 10 minutes</div>
+                        </div>
+                        <input type="checkbox" id="setting-auto-refresh" class="toggle-switch" checked>
+                    </label>
+
+                    <!-- Privacy Protection -->
+                    <label
+                        class="flex items-center justify-between p-4 rounded-xl border border-gray-800 hover:border-gray-700 transition-colors cursor-pointer">
+                        <div>
+                            <div class="text-gray-200 font-medium">Privacy Protection</div>
+                            <div class="text-gray-500 text-xs mt-0.5">Mask emails and usernames</div>
+                        </div>
+                        <input type="checkbox" id="setting-privacy-mode" class="toggle-switch">
+                    </label>
+
+                    <!-- Compact Layout -->
+                    <label
+                        class="flex items-center justify-between p-4 rounded-xl border border-gray-800 hover:border-gray-700 transition-colors cursor-pointer">
+                        <div>
+                            <div class="text-gray-200 font-medium">Compact Layout</div>
+                            <div class="text-gray-500 text-xs mt-0.5">Reduce Antigravity cards to 2 bars</div>
+                        </div>
+                        <input type="checkbox" id="setting-compact-layout" class="toggle-switch">
+                    </label>
+                </div>
+
+                <div class="space-y-4">
+                    <!-- Track Token Usage -->
+                    <label
+                        class="flex items-center justify-between p-4 rounded-xl border border-gray-800 hover:border-gray-700 transition-colors cursor-pointer">
+                        <div>
+                            <div class="text-gray-200 font-medium">Track Token Usage</div>
+                            <div class="text-gray-500 text-xs mt-0.5">Estimate cost based on token consumption</div>
+                        </div>
+                        <input type="checkbox" id="setting-track-usage" class="toggle-switch" checked>
+                    </label>
+
+                    <!-- Capture Logs -->
+                    <label
+                        class="flex items-center justify-between p-4 rounded-xl border border-gray-800 hover:border-gray-700 transition-colors cursor-pointer">
+                        <div>
+                            <div class="text-gray-200 font-medium">Capture Logs</div>
+                            <div class="text-gray-500 text-xs mt-0.5">Store recent console logs for dashboard</div>
+                        </div>
+                        <input type="checkbox" id="setting-capture-logs" class="toggle-switch">
+                    </label>
+
+                    <!-- Optimize Quota Sorting -->
+                    <label
+                        class="flex items-center justify-between p-4 rounded-xl border border-gray-800 hover:border-gray-700 transition-colors cursor-pointer">
+                        <div>
+                            <div class="text-gray-200 font-medium">Optimize Quota Sorting</div>
+                            <div class="text-gray-500 text-xs mt-0.5">Sort cards by remaining quota within each provider</div>
+                        </div>
+                        <input type="checkbox" id="setting-optimize-quota-sort" class="toggle-switch">
+                    </label>
+
+                    <!-- Auto Restart -->
+                    <label
+                        class="flex items-center justify-between p-4 rounded-xl border border-gray-800 hover:border-gray-700 transition-colors cursor-pointer">
+                        <div>
+                            <div class="text-gray-200 font-medium">Auto Restart (Watchdog)</div>
+                            <div class="text-gray-500 text-xs mt-0.5">Restart server automatically after a crash</div>
+                        </div>
+                        <input type="checkbox" id="setting-auto-restart" class="toggle-switch">
+                    </label>
+                </div>
+            </div>
+
+            <!-- Action Buttons -->
+            <div class="mt-6 flex gap-3 max-w-lg flex-wrap">
+                <button onclick="saveAllSettings()"
+                    class="px-4 py-2.5 rounded-xl border border-gray-700 text-gray-400 font-bold text-sm hover:border-gray-500 hover:text-gray-300 transition-all">
+                    Save
+                </button>
+                <button onclick="resetSettings()"
+                    class="px-4 py-2.5 rounded-xl border border-gray-700 text-gray-400 font-bold text-sm hover:border-gray-500 hover:text-gray-300 transition-all">
+                    Reset
+                </button>
+                <button onclick="enableAllSettings()"
+                    class="px-4 py-2.5 rounded-xl border border-gray-700 text-gray-400 font-bold text-sm hover:border-gray-500 hover:text-gray-300 transition-all">
+                    Enable All
+                </button>
+                <button onclick="disableAllSettings()"
+                    class="px-4 py-2.5 rounded-xl border border-gray-700 text-gray-400 font-bold text-sm hover:border-gray-500 hover:text-gray-300 transition-all">
+                    Disable All
+                </button>
+            </div>
+
+            <div class="mt-6 max-w-5xl rounded-xl border border-gray-800 bg-black/30 p-4">
+                <div class="text-gray-200 font-medium">Backup &amp; Restore</div>
+                <div class="text-gray-500 text-xs mt-0.5">Export accounts, quota cache, usage history, and settings.</div>
+                <div class="mt-3 flex flex-wrap items-center gap-3">
+                    <button onclick="exportConfigBundle()"
+                        class="px-4 py-2 rounded-xl border border-gray-700 text-gray-400 font-bold text-sm hover:border-gray-500 hover:text-gray-300 transition-all">
+                        Export Bundle
+                    </button>
+                    <button onclick="chooseBundleFile()"
+                        class="px-4 py-2 rounded-xl border border-gray-700 text-gray-400 font-bold text-sm hover:border-gray-500 hover:text-gray-300 transition-all">
+                        Choose File
+                    </button>
+                    <button onclick="importConfigBundle()"
+                        class="px-4 py-2 rounded-xl border border-gray-700 text-gray-400 font-bold text-sm hover:border-gray-500 hover:text-gray-300 transition-all">
+                        Import Bundle
+                    </button>
+                    <label class="flex items-center gap-2 text-xs text-gray-500">
+                        <input type="checkbox" id="bundle-replace" checked>
+                        Replace existing accounts
+                    </label>
+                    <span id="bundle-file-name" class="text-xs text-gray-600">No file selected</span>
+                </div>
+                <input type="file" id="bundle-file" accept=".json,application/json" class="hidden">
+            </div>
+
+            <div class="mt-6 text-gray-600 text-xs">
+                Settings are saved to ~/.anti-api/settings.json. Click Save to apply changes.
+            </div>
+        </div>
+
+        <!-- Footer -->
+        <div class="mt-8 text-center text-gray-600 text-xs">
+            © 2025 <a href="https://github.com/silas" target="_blank"
+                class="hover:text-gray-400 transition-colors">Silas</a> · <a href="https://github.com/silas/anti-api"
+                target="_blank" class="hover:text-gray-400 transition-colors">github.com/silas/anti-api</a>
+        </div>
+    </div>
+
+    <!-- Add Account Modal -->
+    <div id="add-account-modal"
+        class="fixed inset-0 bg-black/70 backdrop-blur-sm hidden items-center justify-center z-50">
+        <div class="bg-[#111111] border border-[#2f253f] rounded-2xl w-full max-w-md p-6 text-gray-200">
+            <div class="flex items-center justify-between mb-4">
+                <h2 class="text-lg font-bold">Add Account</h2>
+                <button onclick="closeAddAccountModal()" class="text-gray-500 hover:text-gray-300">✕</button>
+            </div>
+            <div class="space-y-2">
+                <button class="w-full text-left px-4 py-3 rounded-lg border border-[#2f253f] hover:border-gray-500"
+                    onclick="startProviderLogin('antigravity')">
+                    Antigravity
+                </button>
+                <button class="w-full text-left px-4 py-3 rounded-lg border border-[#2f253f] hover:border-gray-500"
+                    onclick="startProviderLogin('codex')">
+                    Codex
+                </button>
+                <button class="w-full text-left px-4 py-3 rounded-lg border border-[#2f253f] hover:border-gray-500"
+                    onclick="startProviderLogin('copilot')">
+                    GitHub Copilot
+                </button>
+            </div>
+            <div id="add-account-status" class="mt-4 text-xs text-gray-400 hidden"></div>
+            <div id="codex-device" class="mt-4 hidden">
+                <div class="text-sm text-gray-400 mb-2">Open the browser and enter this code:</div>
+                <div class="flex items-center gap-2">
+                    <div id="codex-code"
+                        class="px-3 py-2 rounded-lg bg-black border border-[#2f253f] font-mono text-sm text-gray-200">
+                        ------
+                    </div>
+                    <button onclick="copyCodexCode()"
+                        class="px-3 py-2 rounded-lg border border-[#2f253f] text-xs hover:border-gray-500">
+                        Copy
+                    </button>
+                </div>
+            </div>
+            <div id="copilot-device" class="mt-4 hidden">
+                <div class="text-sm text-gray-400 mb-2">Open the browser and enter this code:</div>
+                <div class="flex items-center gap-2">
+                    <div id="copilot-code"
+                        class="px-3 py-2 rounded-lg bg-black border border-[#2f253f] font-mono text-sm text-gray-200">
+                        ------
+                    </div>
+                    <button onclick="copyCopilotCode()"
+                        class="px-3 py-2 rounded-lg border border-[#2f253f] text-xs hover:border-gray-500">
+                        Copy
+                    </button>
+                </div>
+                <a id="copilot-link" href="#" target="_blank"
+                    class="inline-block mt-3 text-blue-400 hover:text-blue-300 text-xs">Open verification page</a>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        const API_BASE = 'http://localhost:8964';
+        const CODEX_SESSION_KEY = 'anti-api-codex-session';
+        let loadingDismissed = false;
+        let codexPopup = null;
+        let codexPopupUrl = null;
+
+        // Tab state
+        let currentTab = 'quota';
+        let remoteLoaded = false;
+        let routingLoaded = false;
+        let logsLoaded = false;
+        let logsSource = null;
+        let logsPaused = false;
+        let logsFollow = true;
+        let lastLogId = 0;
+        const maxLogLines = 1000;
+        let lastRefreshTime = null;
+        let autoRefreshInterval = null;
+
+        // Settings with defaults (cached from server)
+        let cachedSettings = null;
+        const defaultSettings = {
+            preloadRouting: true,
+            autoNgrok: false,
+            autoOpenDashboard: true,
+            autoRefresh: true,
+            autoRestart: false,
+            privacyMode: false,
+            compactLayout: false,
+            trackUsage: true,
+            optimizeQuotaSort: false,
+            captureLogs: false
+        };
+
+        async function loadSettings() {
+            try {
+                const res = await fetch(`${API_BASE}/settings`);
+                if (res.ok) {
+                    cachedSettings = await res.json();
+                    return cachedSettings;
+                }
+            } catch { }
+            return { ...defaultSettings };
+        }
+
+        async function saveAllSettings() {
+            const settings = {
+                preloadRouting: document.getElementById('setting-preload-routing').checked,
+                autoNgrok: document.getElementById('setting-auto-ngrok').checked,
+                autoOpenDashboard: document.getElementById('setting-auto-open').checked,
+                autoRefresh: document.getElementById('setting-auto-refresh').checked,
+                autoRestart: document.getElementById('setting-auto-restart').checked,
+                privacyMode: document.getElementById('setting-privacy-mode').checked,
+                compactLayout: document.getElementById('setting-compact-layout').checked,
+                trackUsage: document.getElementById('setting-track-usage').checked,
+                optimizeQuotaSort: document.getElementById('setting-optimize-quota-sort').checked,
+                captureLogs: document.getElementById('setting-capture-logs').checked
+            };
+            try {
+                const res = await fetch(`${API_BASE}/settings`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(settings)
+                });
+                if (res.ok) {
+                    cachedSettings = await res.json();
+                    showSettingsToast('Settings saved!');
+                    applySettings(settings);
+                    // Sync to localStorage for other pages
+                    localStorage.setItem('anti-api-privacy-mode', String(settings.privacyMode));
+                    localStorage.setItem('anti-api-compact-layout', String(settings.compactLayout));
+                    window._compactLayout = settings.compactLayout;
+                    // Re-render quota to apply changes
+                    fetchQuota(false);
+                    if (currentTab === 'logs') {
+                        refreshLogs();
+                        if (!logsPaused) {
+                            startLogStream();
+                        }
+                    }
+                } else {
+                    showSettingsToast('Failed to save settings', true);
+                }
+            } catch (e) {
+                showSettingsToast('Failed to save settings', true);
+            }
+        }
+
+        async function resetSettings() {
+            // Update UI to defaults
+            document.getElementById('setting-preload-routing').checked = true;
+            document.getElementById('setting-auto-ngrok').checked = false;
+            document.getElementById('setting-auto-open').checked = true;
+            document.getElementById('setting-auto-refresh').checked = true;
+            document.getElementById('setting-auto-restart').checked = false;
+            document.getElementById('setting-privacy-mode').checked = false;
+            document.getElementById('setting-compact-layout').checked = false;
+            document.getElementById('setting-track-usage').checked = true;
+            document.getElementById('setting-optimize-quota-sort').checked = false;
+            document.getElementById('setting-capture-logs').checked = false;
+
+            // Save defaults to server
+            await saveAllSettings();
+            showSettingsToast('Reset to defaults');
+        }
+
+        async function enableAllSettings() {
+            document.getElementById('setting-preload-routing').checked = true;
+            document.getElementById('setting-auto-ngrok').checked = true;
+            document.getElementById('setting-auto-open').checked = true;
+            document.getElementById('setting-auto-refresh').checked = true;
+            document.getElementById('setting-auto-restart').checked = true;
+            document.getElementById('setting-privacy-mode').checked = true;
+            document.getElementById('setting-compact-layout').checked = true;
+            document.getElementById('setting-track-usage').checked = true;
+            document.getElementById('setting-optimize-quota-sort').checked = true;
+            document.getElementById('setting-capture-logs').checked = true;
+
+            await saveAllSettings();
+            showSettingsToast('All settings enabled');
+        }
+
+        async function disableAllSettings() {
+            document.getElementById('setting-preload-routing').checked = false;
+            document.getElementById('setting-auto-ngrok').checked = false;
+            document.getElementById('setting-auto-open').checked = false;
+            document.getElementById('setting-auto-refresh').checked = false;
+            document.getElementById('setting-auto-restart').checked = false;
+            document.getElementById('setting-privacy-mode').checked = false;
+            document.getElementById('setting-compact-layout').checked = false;
+            document.getElementById('setting-track-usage').checked = false;
+            document.getElementById('setting-optimize-quota-sort').checked = false;
+            document.getElementById('setting-capture-logs').checked = false;
+
+            await saveAllSettings();
+            showSettingsToast('All settings disabled');
+        }
+
+        function chooseBundleFile() {
+            const input = document.getElementById('bundle-file');
+            if (input) input.click();
+        }
+
+        function updateBundleFileName() {
+            const input = document.getElementById('bundle-file');
+            const label = document.getElementById('bundle-file-name');
+            if (!input || !label) return;
+            const file = input.files && input.files[0];
+            label.textContent = file ? file.name : 'No file selected';
+        }
+
+        async function exportConfigBundle() {
+            try {
+                showSettingsToast('Preparing bundle...');
+                const res = await fetch(`${API_BASE}/bundle/export`);
+                if (!res.ok) {
+                    showSettingsToast('Export failed', true);
+                    return;
+                }
+                const data = await res.json();
+                const blob = new Blob([JSON.stringify(data, null, 2)], { type: 'application/json' });
+                const url = URL.createObjectURL(blob);
+                const a = document.createElement('a');
+                const ts = new Date().toISOString().replace(/[:.]/g, '-');
+                a.href = url;
+                a.download = `anti-api-bundle-${ts}.json`;
+                document.body.appendChild(a);
+                a.click();
+                a.remove();
+                URL.revokeObjectURL(url);
+                showSettingsToast('Bundle exported');
+            } catch (e) {
+                showSettingsToast('Export failed', true);
+            }
+        }
+
+        async function importConfigBundle() {
+            const input = document.getElementById('bundle-file');
+            const replace = document.getElementById('bundle-replace');
+            if (!input || !input.files || input.files.length === 0) {
+                showSettingsToast('Choose a bundle file first', true);
+                return;
+            }
+            const file = input.files[0];
+            try {
+                const text = await file.text();
+                const payload = JSON.parse(text);
+                if (replace && replace.checked) {
+                    payload.mode = 'replace';
+                } else {
+                    payload.mode = 'merge';
+                }
+                const res = await fetch(`${API_BASE}/bundle/import`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(payload),
+                });
+                const data = await res.json();
+                if (!res.ok || !data.success) {
+                    showSettingsToast(data.error || 'Import failed', true);
+                    return;
+                }
+                showSettingsToast(`Imported ${data.imported} account(s)`);
+                await initSettings();
+                refreshAll(false);
+            } catch (e) {
+                showSettingsToast('Import failed', true);
+            }
+        }
+
+        function showSettingsToast(message, isError = false) {
+            const toast = document.getElementById('copy-toast');
+            toast.textContent = message;
+            toast.style.borderColor = isError ? '#ef4444' : '#22d3ee';
+            toast.classList.remove('opacity-0', 'translate-x-8');
+            toast.classList.add('opacity-100', 'translate-x-0');
+            setTimeout(() => {
+                toast.classList.add('opacity-0', 'translate-x-8');
+                toast.classList.remove('opacity-100', 'translate-x-0');
+            }, 2000);
+        }
+
+        function applySettings(settings) {
+            // Apply autoRefresh
+            if (settings.autoRefresh && !autoRefreshInterval) {
+                autoRefreshInterval = setInterval(() => refreshAll(false), 600000);
+            } else if (!settings.autoRefresh && autoRefreshInterval) {
+                clearInterval(autoRefreshInterval);
+                autoRefreshInterval = null;
+            }
+            // Privacy mode change triggers re-render
+            if (typeof settings.privacyMode !== 'undefined') {
+                window._privacyMode = settings.privacyMode;
+            }
+            if (typeof settings.optimizeQuotaSort !== 'undefined') {
+                window._optimizeQuotaSort = settings.optimizeQuotaSort;
+            }
+            if (typeof settings.autoRestart !== 'undefined') {
+                window._autoRestart = settings.autoRestart;
+            }
+        }
+
+        // Privacy masking functions
+        function maskEmail(email) {
+            if (!window._privacyMode || !email) return email;
+            const atIndex = email.indexOf('@');
+            if (atIndex < 0) return maskUsername(email); // Not an email, treat as username
+
+            const local = email.substring(0, atIndex);
+            const domain = email.substring(atIndex + 1);
+            const dotIndex = domain.lastIndexOf('.');
+
+            // Mask local part: first 2 + ** + last 2
+            let maskedLocal;
+            if (local.length <= 4) {
+                maskedLocal = local[0] + '**' + (local.length > 1 ? local[local.length - 1] : '');
+            } else {
+                maskedLocal = local.substring(0, 2) + '**' + local.substring(local.length - 2);
+            }
+
+            // Mask domain: first letter + ** + extension (e.g., g**.com)
+            const ext = dotIndex >= 0 ? domain.substring(dotIndex) : '';
+            const domainName = dotIndex >= 0 ? domain.substring(0, dotIndex) : domain;
+            const maskedDomain = (domainName.length > 0 ? domainName[0] : '') + '**' + ext;
+
+            return maskedLocal + '@' + maskedDomain;
+        }
+
+        function maskUsername(name) {
+            if (!window._privacyMode || !name) return name;
+            if (name.length <= 3) return name[0] + '*'.repeat(name.length - 1);
+            return name.substring(0, 3) + '*'.repeat(Math.min(4, name.length - 3));
+        }
+
+        async function initSettings() {
+            const settings = await loadSettings();
+
+            // Update UI checkboxes
+            document.getElementById('setting-preload-routing').checked = settings.preloadRouting;
+            document.getElementById('setting-auto-ngrok').checked = settings.autoNgrok;
+            document.getElementById('setting-auto-open').checked = settings.autoOpenDashboard;
+            document.getElementById('setting-auto-refresh').checked = settings.autoRefresh;
+            document.getElementById('setting-auto-restart').checked = settings.autoRestart;
+            document.getElementById('setting-privacy-mode').checked = settings.privacyMode;
+            document.getElementById('setting-compact-layout').checked = settings.compactLayout;
+            document.getElementById('setting-track-usage').checked = settings.trackUsage;
+            document.getElementById('setting-optimize-quota-sort').checked = settings.optimizeQuotaSort;
+            document.getElementById('setting-capture-logs').checked = settings.captureLogs;
+            window._privacyMode = settings.privacyMode;
+            window._compactLayout = settings.compactLayout;
+            window._trackUsage = settings.trackUsage;
+            window._optimizeQuotaSort = settings.optimizeQuotaSort;
+            window._autoRestart = settings.autoRestart;
+
+            // Apply settings
+            if (settings.preloadRouting) {
+                setTimeout(() => {
+                    loadRoutingContent();
+                    // Sync privacy mode for preloaded routing
+                    lastRoutingPrivacyMode = localStorage.getItem('anti-api-privacy-mode') || 'false';
+                }, 1500);
+            }
+            if (settings.autoRefresh) {
+                autoRefreshInterval = setInterval(() => refreshAll(false), 600000);
+            }
+        }
+
+        // Convert timestamp to relative time format
+        function getRelativeTime(date) {
+            const now = new Date();
+            const diffMs = now - date;
+            const diffSec = Math.floor(diffMs / 1000);
+            const diffMin = Math.floor(diffSec / 60);
+            const diffHr = Math.floor(diffMin / 60);
+            const diffDay = Math.floor(diffHr / 24);
+
+            if (diffSec < 60) return 'just now';
+            if (diffMin < 60) return `${diffMin}min ago`;
+            if (diffHr < 24) return `${diffHr}hr ago`;
+            return `${diffDay}d ago`;
+        }
+
+        // Update last-updated display
+        function updateLastUpdatedDisplay() {
+            if (!lastRefreshTime) return;
+            document.getElementById('last-updated').innerHTML =
+                `Updated <span class="font-bold text-gray-400">${getRelativeTime(lastRefreshTime)}</span>`;
+        }
+
+        function setRefreshState(isRefreshing) {
+            const refreshBtn = document.getElementById('refresh-btn');
+            const lastUpdated = document.getElementById('last-updated');
+            if (!refreshBtn) return;
+            if (isRefreshing) {
+                refreshBtn.disabled = true;
+                refreshBtn.textContent = 'Refreshing...';
+                refreshBtn.classList.add('opacity-70', 'cursor-wait');
+                if (lastUpdated) {
+                    lastUpdated.textContent = 'Refreshing...';
+                }
+            } else {
+                refreshBtn.disabled = false;
+                refreshBtn.textContent = 'Refresh';
+                refreshBtn.classList.remove('opacity-70', 'cursor-wait');
+                updateLastUpdatedDisplay();
+            }
+        }
+
+        // Update relative time every minute
+        setInterval(updateLastUpdatedDisplay, 60000);
+
+        // Tab switching function
+        let lastRoutingPrivacyMode = null; // Track privacy mode when routing was last loaded
+
+        function switchTab(tabName) {
+            currentTab = tabName;
+
+            // Update tab button styles
+            document.querySelectorAll('.tab-btn').forEach(btn => {
+                btn.classList.remove('text-white', 'bg-gradient-to-r', 'from-cyan-500/30', 'to-blue-500/30', 'border', 'border-cyan-500/50');
+                btn.classList.add('text-gray-400');
+            });
+
+            const activeTab = document.getElementById(`tab-${tabName}`);
+            if (activeTab) {
+                activeTab.classList.remove('text-gray-400');
+                activeTab.classList.add('text-white', 'bg-gradient-to-r', 'from-cyan-500/30', 'to-blue-500/30', 'border', 'border-cyan-500/50');
+            }
+
+            // Show/hide tab content
+            document.querySelectorAll('.tab-content').forEach(content => {
+                content.classList.add('hidden');
+            });
+
+            const activeContent = document.getElementById(`tab-content-${tabName}`);
+            if (activeContent) {
+                activeContent.classList.remove('hidden');
+            }
+
+            // Lazy load Remote content
+            if (tabName === 'remote' && !remoteLoaded) {
+                loadRemoteContent();
+            }
+
+            // Lazy load Routing content or reload if privacy changed
+            if (tabName === 'routing') {
+                const currentPrivacy = localStorage.getItem('anti-api-privacy-mode') || 'false';
+                if (!routingLoaded) {
+                    loadRoutingContent();
+                    lastRoutingPrivacyMode = currentPrivacy;
+                } else if (lastRoutingPrivacyMode !== currentPrivacy) {
+                    // Privacy mode changed, reload iframe
+                    const iframe = document.getElementById('routing-iframe');
+                    if (iframe) {
+                        iframe.contentWindow.location.reload();
+                    }
+                    lastRoutingPrivacyMode = currentPrivacy;
+                }
+            }
+
+            // Load Usage data when switching to usage tab
+            if (tabName === 'usage') {
+                fetchUsageData(false);
+            }
+
+            if (tabName === 'logs') {
+                initLogs();
+            } else {
+                stopLogStream();
+            }
+        }
+
+        function loadRemoteContent() {
+            const iframe = document.getElementById('remote-iframe');
+            if (iframe && !iframe.src.includes('/remote-panel')) {
+                iframe.src = '/remote-panel';
+            }
+            remoteLoaded = true;
+        }
+
+        function loadRoutingContent() {
+            const iframe = document.getElementById('routing-iframe');
+            if (iframe && !iframe.src.includes('/routing')) {
+                iframe.src = '/routing';
+            }
+            routingLoaded = true;
+        }
+
+        function refreshRoutingIfLoaded() {
+            if (!routingLoaded) return;
+            const iframe = document.getElementById('routing-iframe');
+            if (iframe && iframe.contentWindow) {
+                iframe.contentWindow.location.reload();
+            }
+        }
+
+        function setLogsStatus(message, isError = false) {
+            const status = document.getElementById('logs-status');
+            if (!status) return;
+            status.textContent = message;
+            status.classList.toggle('text-red-400', isError);
+            status.classList.toggle('text-gray-500', !isError);
+        }
+
+        function appendLogEntry(entry) {
+            const view = document.getElementById('log-view');
+            if (!view) return;
+            const line = entry?.line || " ";
+            const row = document.createElement('div');
+            row.textContent = line === "" ? " " : line;
+            view.appendChild(row);
+            while (view.childNodes.length > maxLogLines) {
+                view.removeChild(view.firstChild);
+            }
+            if (logsFollow) {
+                view.scrollTop = view.scrollHeight;
+            }
+        }
+
+        function renderLogEntries(entries) {
+            const view = document.getElementById('log-view');
+            if (!view) return;
+            view.innerHTML = '';
+            entries.forEach(entry => appendLogEntry(entry));
+            if (logsFollow) {
+                view.scrollTop = view.scrollHeight;
+            }
+        }
+
+        async function refreshLogs() {
+            setLogsStatus('Refreshing...');
+            try {
+                const res = await fetch(`${API_BASE}/logs?limit=${maxLogLines}`);
+                if (!res.ok) {
+                    throw new Error(`HTTP ${res.status}`);
+                }
+                const data = await res.json();
+                if (!data.enabled) {
+                    renderLogEntries([{ line: 'Log capture is disabled. Enable it in Settings.' }]);
+                    lastLogId = data.lastId || lastLogId;
+                    setLogsStatus('Disabled');
+                    stopLogStream();
+                    return;
+                }
+                renderLogEntries(data.entries || []);
+                lastLogId = data.lastId || lastLogId;
+                setLogsStatus(logsPaused ? 'Paused' : 'Connected');
+            } catch (error) {
+                setLogsStatus(`Failed: ${error.message}`, true);
+            }
+        }
+
+        function startLogStream() {
+            if (logsPaused) return;
+            stopLogStream();
+            setLogsStatus('Connecting...');
+            const source = new EventSource(`${API_BASE}/logs/stream?since=${lastLogId}`);
+            logsSource = source;
+
+            source.addEventListener('disabled', () => {
+                setLogsStatus('Disabled');
+                renderLogEntries([{ line: 'Log capture is disabled. Enable it in Settings.' }]);
+                stopLogStream();
+            });
+
+            source.addEventListener('log', (event) => {
+                try {
+                    const entry = JSON.parse(event.data);
+                    lastLogId = entry.id || lastLogId;
+                    appendLogEntry(entry);
+                } catch (error) {
+                    // ignore parsing errors
+                }
+            });
+
+            source.onopen = () => {
+                setLogsStatus('Connected');
+            };
+
+            source.onerror = () => {
+                setLogsStatus('Disconnected', true);
+                stopLogStream();
+                if (!logsPaused && currentTab === 'logs') {
+                    setTimeout(() => startLogStream(), 2000);
+                }
+            };
+        }
+
+        function stopLogStream() {
+            if (logsSource) {
+                logsSource.close();
+                logsSource = null;
+            }
+        }
+
+        function toggleLogsPause() {
+            logsPaused = !logsPaused;
+            const toggleBtn = document.getElementById('logs-toggle');
+            if (toggleBtn) {
+                toggleBtn.textContent = logsPaused ? 'Resume' : 'Pause';
+            }
+            if (logsPaused) {
+                stopLogStream();
+                setLogsStatus('Paused');
+            } else {
+                startLogStream();
+            }
+        }
+
+        function clearLogView() {
+            const view = document.getElementById('log-view');
+            if (view) {
+                view.innerHTML = '';
+            }
+        }
+
+        function initLogs() {
+            if (!logsLoaded) {
+                logsLoaded = true;
+                const followToggle = document.getElementById('logs-follow');
+                if (followToggle) {
+                    logsFollow = followToggle.checked;
+                    followToggle.addEventListener('change', () => {
+                        logsFollow = followToggle.checked;
+                    });
+                }
+                refreshLogs();
+            }
+            if (!logsPaused) {
+                startLogStream();
+            }
+        }
+
+        // 3D 倾斜效果
+        function init3DEffect() {
+            // 卡片效果
+            document.querySelectorAll('.card-3d').forEach(card => {
+                const inner = card.querySelector('.card-inner');
+                if (!card.dataset.tiltBound) {
+                    card.dataset.tiltBound = 'true';
+                    card.addEventListener('mousemove', (e) => {
+                        const rect = card.getBoundingClientRect();
+                        const x = e.clientX - rect.left;
+                        const y = e.clientY - rect.top;
+                        const centerX = rect.width / 2;
+                        const centerY = rect.height / 2;
+
+                        // 计算旋转角度 (最大 15 度)
+                        const rotateX = ((y - centerY) / centerY) * -15;
+                        const rotateY = ((x - centerX) / centerX) * 15;
+
+                        inner.style.transform = `rotateX(${rotateX}deg) rotateY(${rotateY}deg)`;
+                        card.classList.add('active');
+                    });
+
+                    card.addEventListener('mouseleave', () => {
+                        inner.style.transform = 'rotateX(0) rotateY(0)';
+                        card.classList.remove('active');
+                    });
+                }
+
+                if (!card.dataset.pingBound) {
+                    card.dataset.pingBound = 'true';
+                    card.addEventListener('click', (e) => {
+                        if (e.target.closest('button') || e.target.closest('a') || e.target.closest('input')) {
+                            return;
+                        }
+                        pingAccountCard(card);
+                    });
+                }
+            });
+
+            // Refresh 按钮效果
+            const refreshContainer = document.getElementById('refresh-container');
+            const refreshBtn = document.getElementById('refresh-btn');
+
+            if (refreshContainer && refreshBtn) {
+                refreshContainer.addEventListener('mousemove', (e) => {
+                    const rect = refreshContainer.getBoundingClientRect();
+                    const x = e.clientX - rect.left;
+                    const y = e.clientY - rect.top;
+                    const centerX = rect.width / 2;
+                    const centerY = rect.height / 2;
+
+                    const rotateX = ((y - centerY) / centerY) * -10;
+                    const rotateY = ((x - centerX) / centerX) * 10;
+
+                    refreshBtn.style.transform = `rotateX(${rotateX}deg) rotateY(${rotateY}deg)`;
+                    refreshContainer.classList.add('active');
+                });
+
+                refreshContainer.addEventListener('mouseleave', () => {
+                    refreshBtn.style.transform = 'rotateX(0) rotateY(0)';
+                    refreshContainer.classList.remove('active');
+                });
+            }
+
+            // Log out 按钮效果
+            const logoutContainer = document.getElementById('logout-container');
+            const logoutBtn = document.getElementById('logout-btn');
+
+            if (logoutContainer && logoutBtn) {
+                logoutContainer.addEventListener('mousemove', (e) => {
+                    const rect = logoutContainer.getBoundingClientRect();
+                    const x = e.clientX - rect.left;
+                    const y = e.clientY - rect.top;
+                    const centerX = rect.width / 2;
+                    const centerY = rect.height / 2;
+
+                    const rotateX = ((y - centerY) / centerY) * -10;
+                    const rotateY = ((x - centerX) / centerX) * 10;
+
+                    logoutBtn.style.transform = `rotateX(${rotateX}deg) rotateY(${rotateY}deg)`;
+                    logoutContainer.classList.add('active');
+                });
+
+                logoutContainer.addEventListener('mouseleave', () => {
+                    logoutBtn.style.transform = 'rotateX(0) rotateY(0)';
+                    logoutContainer.classList.remove('active');
+                });
+            }
+        }
+
+        function formatResetTime(resetTime) {
+            const now = new Date();
+            const reset = new Date(resetTime);
+            const diffMs = reset - now;
+
+            if (diffMs <= 0) return 'Resetting...';
+
+            const hours = Math.floor(diffMs / (1000 * 60 * 60));
+            const minutes = Math.floor((diffMs % (1000 * 60 * 60)) / (1000 * 60));
+
+            if (hours > 0) return `${hours}h ${minutes}m`;
+            return `${minutes}m`;
+        }
+
+        function showToast(message) {
+            const toast = document.getElementById('copy-toast');
+            toast.textContent = message;
+            toast.classList.remove('opacity-0', 'translate-x-8');
+            toast.classList.add('opacity-100', 'translate-x-0');
+            setTimeout(() => {
+                toast.classList.remove('opacity-100', 'translate-x-0');
+                toast.classList.add('opacity-0', 'translate-x-8');
+            }, 2000);
+        }
+
+        async function pingAccountCard(card) {
+            if (!card || card.dataset.pinging === 'true') return;
+            const provider = card.dataset.provider;
+            const accountId = card.dataset.accountId;
+            const displayName = card.dataset.displayName || accountId;
+            if (!provider || !accountId) return;
+
+            card.dataset.pinging = 'true';
+
+            try {
+                const response = await fetch(`${API_BASE}/accounts/ping`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ provider, accountId })
+                });
+                const text = await response.text();
+                let data = null;
+                try {
+                    data = JSON.parse(text);
+                } catch {
+                    data = { success: false, error: text || 'Invalid response' };
+                }
+                if (data.success) {
+                    const latencyMs = Number(data.latencyMs || 0);
+                    const latencySec = Math.max(0, latencyMs / 1000).toFixed(1);
+                    showToast(`Latency ${latencySec}s`);
+                } else {
+                    showToast('Unavailable');
+                }
+            } catch (error) {
+                showToast('Unavailable');
+            } finally {
+                card.dataset.pinging = 'false';
+            }
+        }
+
+        function hashId(input) {
+            let hash = 0;
+            const str = String(input || '');
+            for (let i = 0; i < str.length; i++) {
+                hash = ((hash << 5) - hash) + str.charCodeAt(i);
+                hash |= 0;
+            }
+            return Math.abs(hash).toString(16);
+        }
+
+        function getProviderLogo(provider, cardId) {
+            const uid = hashId(cardId || provider);
+            if (provider === 'antigravity') {
+                const aId = `gemini-a-${uid}`;
+                const bId = `gemini-b-${uid}`;
+                const cId = `gemini-c-${uid}`;
+                const geminiPath = 'M20.616 10.835a14.147 14.147 0 01-4.45-3.001 14.111 14.111 0 01-3.678-6.452.503.503 0 00-.975 0 14.134 14.134 0 01-3.679 6.452 14.155 14.155 0 01-4.45 3.001c-.65.28-1.318.505-2.002.678a.502.502 0 000 .975c.684.172 1.35.397 2.002.677a14.147 14.147 0 014.45 3.001 14.112 14.112 0 013.679 6.453.502.502 0 00.975 0c.172-.685.397-1.351.677-2.003a14.145 14.145 0 013.001-4.45 14.113 14.113 0 016.453-3.678.503.503 0 000-.975 13.245 13.245 0 01-2.003-.678z';
+                return `
+                    <svg class="provider-logo" viewBox="0 0 24 24" width="18" height="18" xmlns="http://www.w3.org/2000/svg" aria-label="Gemini" role="img">
+                        <title>Gemini</title>
+                        <path d="${geminiPath}" fill="#3186FF"></path>
+                        <path d="${geminiPath}" fill="url(#${aId})"></path>
+                        <path d="${geminiPath}" fill="url(#${bId})"></path>
+                        <path d="${geminiPath}" fill="url(#${cId})"></path>
+                        <defs>
+                            <linearGradient gradientUnits="userSpaceOnUse" id="${aId}" x1="7" x2="11" y1="15.5" y2="12">
+                                <stop stop-color="#08B962"></stop>
+                                <stop offset="1" stop-color="#08B962" stop-opacity="0"></stop>
+                            </linearGradient>
+                            <linearGradient gradientUnits="userSpaceOnUse" id="${bId}" x1="8" x2="11.5" y1="5.5" y2="11">
+                                <stop stop-color="#F94543"></stop>
+                                <stop offset="1" stop-color="#F94543" stop-opacity="0"></stop>
+                            </linearGradient>
+                            <linearGradient gradientUnits="userSpaceOnUse" id="${cId}" x1="3.5" x2="17.5" y1="13.5" y2="12">
+                                <stop stop-color="#FABC12"></stop>
+                                <stop offset=".46" stop-color="#FABC12" stop-opacity="0"></stop>
+                            </linearGradient>
+                        </defs>
+                    </svg>
+                `;
+            }
+            if (provider === 'codex') {
+                const openAiPath = 'M21.55 10.004a5.416 5.416 0 00-.478-4.501c-1.217-2.09-3.662-3.166-6.05-2.66A5.59 5.59 0 0010.831 1C8.39.995 6.224 2.546 5.473 4.838A5.553 5.553 0 001.76 7.496a5.487 5.487 0 00.691 6.5 5.416 5.416 0 00.477 4.502c1.217 2.09 3.662 3.165 6.05 2.66A5.586 5.586 0 0013.168 23c2.443.006 4.61-1.546 5.361-3.84a5.553 5.553 0 003.715-2.66 5.488 5.488 0 00-.693-6.497v.001zm-8.381 11.558a4.199 4.199 0 01-2.675-.954c.034-.018.093-.05.132-.074l4.44-2.53a.71.71 0 00.364-.623v-6.176l1.877 1.069c.02.01.033.029.036.05v5.115c-.003 2.274-1.87 4.118-4.174 4.123zM4.192 17.78a4.059 4.059 0 01-.498-2.763c.032.02.09.055.131.078l4.44 2.53c.225.13.504.13.73 0l5.42-3.088v2.138a.068.068 0 01-.027.057L9.9 19.288c-1.999 1.136-4.552.46-5.707-1.51h-.001zM3.023 8.216A4.15 4.15 0 015.198 6.41l-.002.151v5.06a.711.711 0 00.364.624l5.42 3.087-1.876 1.07a.067.067 0 01-.063.005l-4.489-2.559c-1.995-1.14-2.679-3.658-1.53-5.63h.001zm15.417 3.54l-5.42-3.088L14.896 7.6a.067.067 0 01.063-.006l4.489 2.557c1.998 1.14 2.683 3.662 1.529 5.633a4.163 4.163 0 01-2.174 1.807V12.38a.71.71 0 00-.363-.623zm1.867-2.773a6.04 6.04 0 00-.132-.078l-4.44-2.53a.731.731 0 00-.729 0l-5.42 3.088V7.325a.068.068 0 01.027-.057L14.1 4.713c2-1.137 4.555-.46 5.707 1.513.487.833.664 1.809.499 2.757h.001zm-11.741 3.81l-1.877-1.068a.065.065 0 01-.036-.051V6.559c.001-2.277 1.873-4.122 4.181-4.12.976 0 1.92.338 2.671.954-.034.018-.092.05-.131.073l-4.44 2.53a.71.71 0 00-.365.623l-.003 6.173v.002zm1.02-2.168L12 9.25l2.414 1.375v2.75L12 14.75l-2.415-1.375v-2.75z';
+                return `
+                    <svg class="provider-logo provider-logo--codex" viewBox="0 0 24 24" width="18" height="18" fill="currentColor" fill-rule="evenodd" xmlns="http://www.w3.org/2000/svg" aria-label="OpenAI" role="img">
+                        <title>OpenAI</title>
+                        <path d="${openAiPath}"></path>
+                    </svg>
+                `;
+            }
+            if (provider === 'copilot') {
+                const copilotPath = 'M19.245 5.364c1.322 1.36 1.877 3.216 2.11 5.817.622 0 1.2.135 1.592.654l.73.964c.21.278.323.61.323.955v2.62c0 .339-.173.669-.453.868C20.239 19.602 16.157 21.5 12 21.5c-4.6 0-9.205-2.583-11.547-4.258-.28-.2-.452-.53-.453-.868v-2.62c0-.345.113-.679.321-.956l.73-.963c.392-.517.974-.654 1.593-.654l.029-.297c.25-2.446.81-4.213 2.082-5.52 2.461-2.54 5.71-2.851 7.146-2.864h.198c1.436.013 4.685.323 7.146 2.864zm-7.244 4.328c-.284 0-.613.016-.962.05-.123.447-.305.85-.57 1.108-1.05 1.023-2.316 1.18-2.994 1.18-.638 0-1.306-.13-1.851-.464-.516.165-1.012.403-1.044.996a65.882 65.882 0 00-.063 2.884l-.002.48c-.002.563-.005 1.126-.013 1.69.002.326.204.63.51.765 2.482 1.102 4.83 1.657 6.99 1.657 2.156 0 4.504-.555 6.985-1.657a.854.854 0 00.51-.766c.03-1.682.006-3.372-.076-5.053-.031-.596-.528-.83-1.046-.996-.546.333-1.212.464-1.85.464-.677 0-1.942-.157-2.993-1.18-.266-.258-.447-.661-.57-1.108-.32-.032-.64-.049-.96-.05zm-2.525 4.013c.539 0 .976.426.976.95v1.753c0 .525-.437.95-.976.95a.964.964 0 01-.976-.95v-1.752c0-.525.437-.951.976-.951zm5 0c.539 0 .976.426.976.95v1.753c0 .525-.437.95-.976.95a.964.964 0 01-.976-.95v-1.752c0-.525.437-.951.976-.951zM7.635 5.087c-1.05.102-1.935.438-2.385.906-.975 1.037-.765 3.668-.21 4.224.405.394 1.17.657 1.995.657h.09c.649-.013 1.785-.176 2.73-1.11.435-.41.705-1.433.675-2.47-.03-.834-.27-1.52-.63-1.813-.39-.336-1.275-.482-2.265-.394zm6.465.394c-.36.292-.6.98-.63 1.813-.03 1.037.24 2.06.675 2.47.968.957 2.136 1.104 2.776 1.11h.044c.825 0 1.59-.263 1.995-.657.555-.556.765-3.187-.21-4.224-.45-.468-1.335-.804-2.385-.906-.99-.088-1.875.058-2.265.394zM12 7.615c-.24 0-.525.015-.84.044.03.16.045.336.06.526l-.001.159a2.94 2.94 0 01-.014.25c.225-.022.425-.027.612-.028h.366c.187 0 .387.006.612.028-.015-.146-.015-.277-.015-.409.015-.19.03-.365.06-.526a9.29 9.29 0 00-.84-.044z';
+                return `
+                    <svg class="provider-logo provider-logo--copilot" viewBox="0 0 24 24" width="18" height="18" fill="currentColor" fill-rule="evenodd" xmlns="http://www.w3.org/2000/svg" aria-label="Github Copilot" role="img">
+                        <title>Github Copilot</title>
+                        <path d="${copilotPath}"></path>
+                    </svg>
+                `;
+            }
+            return `<span class="provider-logo--fallback">${provider}</span>`;
+        }
+
+        function copyModelId(modelId) {
+            navigator.clipboard.writeText(modelId);
+            showToast(`Copied: ${modelId}`);
+        }
+
+        async function deleteAccount(accountId, displayName) {
+            if (!confirm(`Remove account "${displayName}"?`)) return;
+
+            try {
+                const response = await fetch(`${API_BASE}/accounts/${encodeURIComponent(accountId)}`, {
+                    method: 'DELETE'
+                });
+                const data = await response.json();
+
+                if (data.success) {
+                    showToast(`Removed: ${displayName}`);
+                    refreshAll(true);
+                } else {
+                    showToast(`Failed: ${data.error || 'Unknown error'}`);
+                }
+            } catch (error) {
+                showToast(`Error: ${error.message}`);
+            }
+        }
+
+        function renderAccountCard(account) {
+            const provider = account.provider || 'antigravity';
+            let bars = account.bars || [];
+            const cardId = `${provider}-${account.accountId}`;
+
+            // Compact layout: for Antigravity, show only 2 bars (claude_gpt + lower of gpro/gflash)
+            if (window._compactLayout && provider === 'antigravity' && bars.length >= 3) {
+                const claudeGpt = bars.find(b => b.key === 'claude_gpt');
+                const gpro = bars.find(b => b.key === 'gpro');
+                const gflash = bars.find(b => b.key === 'gflash');
+
+                // Pick the Gemini bar with lower percentage
+                let geminiBar = null;
+                if (gpro && gflash) {
+                    geminiBar = gpro.percentage <= gflash.percentage ? gpro : gflash;
+                    geminiBar = { ...geminiBar, label: 'gemini' }; // Unified label
+                } else {
+                    geminiBar = gpro || gflash;
+                    if (geminiBar) geminiBar = { ...geminiBar, label: 'gemini' };
+                }
+
+                bars = [claudeGpt, geminiBar].filter(Boolean);
+            }
+
+            const barHtml = bars.map(bar => {
+                const percentage = Math.max(0, Math.min(100, Math.round(bar.percentage || 0)));
+                return `
+                    <div class="space-y-1">
+                        <div class="flex items-center justify-between text-xs text-gray-400">
+                            <span class="uppercase tracking-widest">${bar.label}</span>
+                            <span class="font-bold text-gray-400">${percentage}%</span>
+                        </div>
+                        <div class="h-2 bg-gray-900 rounded-full overflow-hidden">
+                            <div class="progress-bar h-full rounded-full transition-all ${provider}-bar"
+                                 style="width: ${percentage}%;"></div>
+                        </div>
+                        <div class="text-[10px] text-gray-500">${bar.resetTime ? formatResetTime(bar.resetTime) : '—'}</div>
+                    </div>
+                `;
+            }).join('');
+
+            // Apply privacy masking based on provider
+            const displayName = account.displayName || account.accountId;
+            const maskedName = provider === 'copilot' ? maskUsername(displayName) : maskEmail(displayName);
+            const providerLogo = getProviderLogo(provider, cardId);
+
+            return `
+                <div class="card-3d" data-provider="${provider}" data-card-id="${cardId}" data-account-id="${account.accountId}" data-display-name="${displayName}">
+                    <div class="card-inner rounded-2xl p-5">
+                        <div class="flex items-center justify-between mb-4">
+                            <div class="flex items-center gap-2">
+                                ${providerLogo}
+                                <div class="text-sm font-bold text-gray-300">${maskedName}</div>
+                            </div>
+                            <div class="flex items-center gap-2">
+                                <button onclick="event.stopPropagation(); deleteAccount('${account.accountId}', '${displayName}')"
+                                        class="text-gray-600 hover:text-red-500 transition-colors text-xs px-1" title="Remove account">✕</button>
+                            </div>
+                        </div>
+                        <div class="space-y-4">${barHtml}</div>
+                    </div>
+                </div>
+            `;
+        }
+
+        function getQuotaBarInfo(account, key, label) {
+            const bars = account.bars || [];
+            const byKey = bars.find(bar => bar.key === key);
+            const byLabel = label ? bars.find(bar => bar.label === label) : null;
+            const bar = byKey || byLabel;
+            const percent = bar?.percentage;
+            return {
+                percent: typeof percent === 'number' ? percent : 0,
+                resetTime: bar?.resetTime || null,
+            };
+        }
+
+        function parseResetTime(resetTime) {
+            if (!resetTime) return Number.POSITIVE_INFINITY;
+            const ts = Date.parse(resetTime);
+            return Number.isNaN(ts) ? Number.POSITIVE_INFINITY : ts;
+        }
+
+        function sortQuotaAccounts(accounts) {
+            if (!window._optimizeQuotaSort) return accounts;
+            const providerOrder = ['antigravity', 'codex', 'copilot'];
+            const sorted = [];
+            const unknown = [];
+
+            for (const provider of providerOrder) {
+                const group = accounts.filter(acc => acc.provider === provider);
+                const metricInfo = (acc) => {
+                    if (provider === 'antigravity') return getQuotaBarInfo(acc, 'claude_gpt', 'claude&gpt');
+                    if (provider === 'codex') return getQuotaBarInfo(acc, 'session', '5h');
+                    if (provider === 'copilot') return getQuotaBarInfo(acc, 'premium', 'premium');
+                    return { percent: 0, resetTime: null };
+                };
+                group.sort((a, b) => {
+                    const aInfo = metricInfo(a);
+                    const bInfo = metricInfo(b);
+                    const diff = bInfo.percent - aInfo.percent;
+                    if (diff !== 0) return diff;
+                    const aReset = parseResetTime(aInfo.resetTime);
+                    const bReset = parseResetTime(bInfo.resetTime);
+                    if (aReset !== bReset) return aReset - bReset;
+                    const nameA = (a.displayName || a.accountId || '').toLowerCase();
+                    const nameB = (b.displayName || b.accountId || '').toLowerCase();
+                    return nameA.localeCompare(nameB);
+                });
+                sorted.push(...group);
+            }
+
+            for (const acc of accounts) {
+                if (!providerOrder.includes(acc.provider)) {
+                    unknown.push(acc);
+                }
+            }
+
+            return [...sorted, ...unknown];
+        }
+
+        async function fetchQuota(showToastMsg = false) {
+            try {
+                const response = await fetch(`${API_BASE}/quota/json`);
+                const data = await response.json();
+
+                if (data.error) {
+                    document.getElementById('quota-grid').innerHTML = `
+                        <div class="text-center py-12">
+                            <p class="text-gray-400 mb-2">📊 Quota details unavailable</p>
+                            <p class="text-gray-600 text-sm">Authentication required or quota API unavailable</p>
+                        </div>
+                    `;
+                    return;
+                }
+
+                let accounts = data.accounts || [];
+                const planInfo = document.getElementById('plan-info');
+                planInfo.innerHTML = `<span class="text-gray-300">${accounts.length} account(s)</span> <span class="text-gray-600 text-xs">• Tap to ping account</span>`;
+
+                // Log refresh success
+                console.log(`\x1b[32m200: Quota refreshed (${accounts.length} accounts)\x1b[0m`);
+
+                if (showToastMsg) {
+                    showToast('✓ Refreshed');
+                }
+
+                accounts = sortQuotaAccounts(accounts);
+                const grid = document.getElementById('quota-grid');
+                if (accounts.length === 0) {
+                    grid.innerHTML = `
+                        <div class="text-center py-12">
+                            <p class="text-gray-400 mb-2">No accounts yet</p>
+                            <p class="text-gray-600 text-sm">Add accounts to see quota cards</p>
+                        </div>
+                    `;
+                } else {
+                    grid.innerHTML = `<div class="grid grid-cols-2 sm:grid-cols-4 gap-4">
+                        ${accounts.map(renderAccountCard).join('')}
+                    </div>`;
+                }
+
+                init3DEffect();
+
+                lastRefreshTime = new Date();
+                updateLastUpdatedDisplay();
+
+                // Show/hide Usage tab based on tracking setting
+                if (window._trackUsage) {
+                    document.getElementById('tab-usage').classList.remove('hidden');
+                } else {
+                    document.getElementById('tab-usage').classList.add('hidden');
+                }
+
+            } catch (error) {
+                document.getElementById('plan-info').innerHTML =
+                    `<span class="text-gray-300">Connection failed</span>`;
+                document.getElementById('quota-grid').innerHTML = `
+                    <div class="text-center py-12">
+                        <p class="text-gray-500 mb-4">Unable to connect to ${API_BASE}</p>
+                        <button onclick="retryFetchQuota(this)" 
+                                class="px-6 py-2 rounded-lg font-bold text-gray-300"
+                                style="background: var(--dark-purple);">
+                            Retry
+                        </button>
+                    </div>
+                `;
+            } finally {
+                hideLoadingOnce();
+            }
+        }
+
+        function retryFetchQuota(button) {
+            if (button) {
+                button.disabled = true;
+                button.textContent = 'Connecting...';
+                button.style.opacity = '0.7';
+                button.style.cursor = 'wait';
+            }
+            const planInfo = document.getElementById('plan-info');
+            if (planInfo) {
+                planInfo.innerHTML = `<span class="text-gray-400">Connecting...</span>`;
+            }
+            fetchQuota();
+        }
+
+        // 隧道状态变量
+        let tunnelUrl = null;
+
+        // 检查隧道状态
+        async function checkTunnelStatus() {
+            try {
+                const response = await fetch(`${API_BASE}/tunnel/status`);
+                const data = await response.json();
+
+                const tunnelContainer = document.getElementById('tunnel-container');
+
+                if (data.active && data.url) {
+                    tunnelUrl = data.url;
+                    tunnelContainer.style.display = 'block';
+                } else {
+                    tunnelUrl = null;
+                    tunnelContainer.style.display = 'none';
+                }
+            } catch (error) {
+                console.error('Failed to check tunnel status:', error);
+            }
+        }
+
+        // 复制隧道 URL
+        async function copyTunnelUrl() {
+            if (!tunnelUrl) return;
+
+            try {
+                await navigator.clipboard.writeText(tunnelUrl);
+
+                // 显示复制成功提示
+                const toast = document.getElementById('copy-toast');
+                toast.textContent = `Copied: ${tunnelUrl}`;
+                toast.classList.remove('opacity-0', 'translate-x-8');
+
+                setTimeout(() => {
+                    toast.classList.add('opacity-0', 'translate-x-8');
+                }, 2000);
+            } catch (error) {
+                alert(`Failed to copy: ${tunnelUrl}`);
+            }
+        }
+
+        // 检查认证状态并更新按钮显示
+        async function checkAuthStatus() {
+            try {
+                const response = await fetch(`${API_BASE}/auth/status`);
+                const data = await response.json();
+
+                const logoutContainer = document.getElementById('logout-container');
+
+                if (data.authenticated) {
+                    if (logoutContainer) {
+                        logoutContainer.style.display = 'block';
+                    }
+                } else {
+                    if (logoutContainer) {
+                        logoutContainer.style.display = 'none';
+                    }
+                }
+            } catch (error) {
+                console.error('Failed to check auth status:', error);
+            }
+        }
+
+        function hideLoadingOnce() {
+            if (loadingDismissed) return;
+            const loading = document.getElementById('loading-screen');
+            loading.classList.add('hidden');
+            loadingDismissed = true;
+            setTimeout(() => loading.remove(), 400);
+        }
+
+        function openAddAccountModal() {
+            document.getElementById('add-account-modal').classList.remove('hidden');
+            document.getElementById('add-account-modal').classList.add('flex');
+            document.getElementById('add-account-status').classList.add('hidden');
+            document.getElementById('codex-device').classList.add('hidden');
+            document.getElementById('copilot-device').classList.add('hidden');
+        }
+
+        function closeAddAccountModal() {
+            document.getElementById('add-account-modal').classList.add('hidden');
+            document.getElementById('add-account-modal').classList.remove('flex');
+        }
+
+        function setAddAccountStatus(message) {
+            const status = document.getElementById('add-account-status');
+            status.textContent = message;
+            status.classList.remove('hidden');
+        }
+
+        function saveCodexSession(sessionId, data = {}) {
+            if (!sessionId) return;
+            const payload = {
+                sessionId,
+                user_code: data.user_code || null,
+                verification_uri: data.verification_uri || null,
+                updatedAt: Date.now(),
+            };
+            try {
+                localStorage.setItem(CODEX_SESSION_KEY, JSON.stringify(payload));
+            } catch { }
+        }
+
+        function clearCodexSession() {
+            try {
+                localStorage.removeItem(CODEX_SESSION_KEY);
+            } catch { }
+        }
+
+        function loadCodexSession() {
+            try {
+                const raw = localStorage.getItem(CODEX_SESSION_KEY);
+                return raw ? JSON.parse(raw) : null;
+            } catch {
+                return null;
+            }
+        }
+
+        async function resumeCodexSession() {
+            const stored = loadCodexSession();
+            if (!stored || !stored.sessionId) return;
+            openAddAccountModal();
+            setAddAccountStatus('Resuming Codex authentication...');
+            if (stored.user_code || stored.verification_uri) {
+                showCodexDeviceFlow(stored);
+            }
+            await pollCodexStatus(stored.sessionId);
+        }
+
+        async function startProviderLogin(provider) {
+            setAddAccountStatus('Starting authentication...');
+
+            try {
+                const payload = { provider };
+                if (provider === 'codex') {
+                    codexPopup = window.open('about:blank', '_blank');
+                    codexPopupUrl = null;
+                }
+                if (provider === 'copilot' || provider === 'codex') {
+                    payload.force = true;
+                }
+                const response = await fetch(`${API_BASE}/auth/login`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(payload)
+                });
+                const data = await response.json();
+
+                if (!data.success) {
+                    setAddAccountStatus(data.error || 'Authentication failed');
+                    return;
+                }
+
+                if (provider === 'copilot') {
+                    if (data.status === 'success' && data.source === 'import') {
+                        setAddAccountStatus(`Imported Copilot: ${data.login || 'Copilot'}`);
+                        closeAddAccountModal();
+                        await checkAuthStatus();
+                        refreshAll(true);
+                        return;
+                    }
+                    showCopilotDeviceFlow(data);
+                    return;
+                }
+
+                if (provider === 'codex' && data.status === 'pending') {
+                    saveCodexSession(data.session_id, data);
+                    showCodexDeviceFlow(data);
+                    return;
+                }
+
+                if (provider === 'codex' && data.source === 'import') {
+                    if (data.count && data.count > 1) {
+                        setAddAccountStatus(`Imported ${data.count} Codex accounts`);
+                    } else {
+                        const first = (data.accounts && data.accounts[0]) || {};
+                        setAddAccountStatus(`Imported Codex: ${first.email || first.id || 'Codex'}`);
+                    }
+                    closeAddAccountModal();
+                } else {
+                    setAddAccountStatus(`Connected: ${data.email || data.id || provider}`);
+                    closeAddAccountModal();
+                }
+                await checkAuthStatus();
+                refreshAll(true);
+            } catch (error) {
+                setAddAccountStatus(`Authentication error: ${error.message}`);
+            }
+        }
+
+        function showCopilotDeviceFlow(data) {
+            const device = document.getElementById('copilot-device');
+            const codeEl = document.getElementById('copilot-code');
+            const linkEl = document.getElementById('copilot-link');
+            device.classList.remove('hidden');
+            codeEl.textContent = data.user_code || '----';
+            linkEl.href = data.verification_uri || '#';
+            if (data.verification_uri) {
+                window.open(data.verification_uri, '_blank');
+            }
+            setAddAccountStatus('Waiting for GitHub Copilot authorization...');
+            pollCopilotStatus(data.device_code, data.interval || 5);
+        }
+
+        function showCodexDeviceFlow(data) {
+            const device = document.getElementById('codex-device');
+            const codeEl = document.getElementById('codex-code');
+            device.classList.remove('hidden');
+            codeEl.textContent = data.user_code || '----';
+            if (data.verification_uri) {
+                openCodexVerification(data.verification_uri);
+            }
+            setAddAccountStatus('Waiting for Codex CLI authorization...');
+            pollCodexStatus(data.session_id);
+        }
+
+        async function pollCopilotStatus(deviceCode, intervalSeconds) {
+            if (!deviceCode) return;
+            const status = await fetch(`${API_BASE}/auth/copilot/status?device_code=${deviceCode}`);
+            const data = await status.json();
+            if (data.status === 'success') {
+                setAddAccountStatus(`Connected: ${data.account?.login || 'Copilot'}`);
+                closeAddAccountModal();
+                await checkAuthStatus();
+                refreshAll(true);
+                return;
+            }
+            if (data.status === 'error') {
+                setAddAccountStatus(data.message || 'Copilot authentication failed');
+                return;
+            }
+            setTimeout(() => pollCopilotStatus(deviceCode, intervalSeconds), intervalSeconds * 1000);
+        }
+
+        function copyCopilotCode() {
+            const code = document.getElementById('copilot-code').textContent;
+            navigator.clipboard.writeText(code || '');
+            showToast(`Copied: ${code}`);
+        }
+
+        async function pollCodexStatus(sessionId) {
+            if (!sessionId) return;
+            const status = await fetch(`${API_BASE}/auth/codex/status?session_id=${sessionId}`);
+            const data = await status.json();
+            if (data.status === 'success') {
+                if (data.accounts && data.accounts.length > 1) {
+                    setAddAccountStatus(`Imported ${data.accounts.length} Codex accounts`);
+                } else {
+                    const first = (data.accounts && data.accounts[0]) || {};
+                    setAddAccountStatus(`Connected: ${first.email || first.id || 'Codex'}`);
+                }
+                closeAddAccountModal();
+                await checkAuthStatus();
+                refreshAll(true);
+                clearCodexSession();
+                return;
+            }
+            if (data.status === 'error') {
+                setAddAccountStatus(data.message || 'Codex authentication failed');
+                clearCodexSession();
+                return;
+            }
+            if (data.user_code && data.verification_uri) {
+                document.getElementById('codex-code').textContent = data.user_code;
+                openCodexVerification(data.verification_uri);
+                saveCodexSession(sessionId, data);
+            }
+            setTimeout(() => pollCodexStatus(sessionId), 2000);
+        }
+
+        function copyCodexCode() {
+            const code = document.getElementById('codex-code').textContent;
+            navigator.clipboard.writeText(code || '');
+            showToast(`Copied: ${code}`);
+        }
+
+        function openCodexVerification(url) {
+            if (!url || url === codexPopupUrl) return;
+            codexPopupUrl = url;
+            if (codexPopup && !codexPopup.closed) {
+                codexPopup.location.href = url;
+                codexPopup.focus();
+            } else {
+                codexPopup = window.open(url, '_blank');
+            }
+        }
+
+        // 登出处理
+        async function handleLogout() {
+            try {
+                const response = await fetch(`${API_BASE}/auth/logout`, { method: 'POST' });
+                const data = await response.json();
+
+                if (data.success) {
+                    alert('Logged out successfully');
+                    await checkAuthStatus();
+                }
+            } catch (error) {
+                alert(`Logout error: ${error.message}`);
+            }
+        }
+
+        // Initial load
+        refreshAll(false);
+        init3DEffect();
+        initSettings();
+        resumeCodexSession();
+        const bundleInput = document.getElementById('bundle-file');
+        if (bundleInput) {
+            bundleInput.addEventListener('change', updateBundleFileName);
+        }
+
+        // 🆕 Auto-refresh when returning from OAuth window
+        // Attach click handlers to Add buttons to track login
+        document.querySelectorAll('[onclick*="startProviderLogin"]').forEach(btn => {
+            btn.addEventListener('click', () => {
+                window._loginInProgress = true;
+                console.log('[Quota] Login started, will refresh on return');
+            });
+        });
+
+        // Refresh when page becomes visible again (user returns from OAuth)
+        document.addEventListener('visibilitychange', () => {
+            if (document.visibilityState === 'visible' && window._loginInProgress) {
+                console.log('[Quota] Page visible after login, refreshing...');
+                setTimeout(() => {
+                    refreshAll(true);
+                    window._loginInProgress = false;
+                }, 500);
+            }
+            if (document.visibilityState === 'visible') {
+                resumeCodexSession();
+            }
+        });
+
+        // Also refresh on window focus
+        window.addEventListener('focus', () => {
+            if (window._loginInProgress) {
+                console.log('[Quota] Window focused after login, refreshing...');
+                setTimeout(() => {
+                    refreshAll(true);
+                    window._loginInProgress = false;
+                }, 500);
+            }
+            resumeCodexSession();
+        });
+
+        async function refreshAll(showToastMsg = false) {
+            if (showToastMsg) {
+                setRefreshState(true);
+            }
+            try {
+                await fetchQuota(showToastMsg);
+                refreshRoutingIfLoaded();
+                if (window._trackUsage) {
+                    await fetchUsageData(showToastMsg);
+                }
+            } finally {
+                if (showToastMsg) {
+                    setRefreshState(false);
+                }
+            }
+        }
+
+        // Usage tracking functions
+        let usageLoading = false;
+        async function fetchUsageData(showToast = true) {
+            if (usageLoading) return;
+            usageLoading = true;
+
+            // Immediate feedback
+            if (showToast) showSettingsToast('Refreshing...');
+
+            // Show loading state
+            const totalEl = document.getElementById('usage-total-large');
+            const gridEl = document.getElementById('usage-model-list');
+            if (totalEl) totalEl.textContent = '...';
+            const todayTokensEl = document.getElementById('usage-today-tokens');
+            const totalTokensEl = document.getElementById('usage-total-tokens');
+            if (todayTokensEl) todayTokensEl.classList.add('hidden');
+            if (totalTokensEl) totalTokensEl.textContent = '... tokens';
+            if (gridEl) gridEl.innerHTML = '<div class="text-gray-500 text-sm text-center py-4">Loading...</div>';
+
+            try {
+                const res = await fetch(`${API_BASE}/usage`);
+                if (!res.ok) {
+                    if (showToast) showSettingsToast('Failed to load usage', true);
+                    return;
+                }
+                const data = await res.json();
+                renderUsageData(data);
+                if (showToast) showSettingsToast('Usage refreshed');
+            } catch (e) {
+                console.warn('Failed to fetch usage data:', e);
+                if (showToast) showSettingsToast('Failed to load usage', true);
+            } finally {
+                usageLoading = false;
+            }
+        }
+
+        function renderUsageData(data) {
+            const grid = document.getElementById('usage-model-list');
+            const models = data.models || [];
+            const formatTokenCount = (value) => {
+                const num = Number(value) || 0;
+                if (num >= 1_000_000) return (num / 1_000_000).toFixed(2) + 'M';
+                if (num >= 1000) return Math.round(num / 1000) + 'K';
+                return String(Math.round(num));
+            };
+            const todayTokensEl = document.getElementById('usage-today-tokens');
+            const totalTokensEl = document.getElementById('usage-total-tokens');
+
+            if (models.length === 0) {
+                grid.innerHTML = `<div class="text-gray-500 text-sm text-center py-4">No usage data yet</div>`;
+                document.getElementById('usage-total-large').textContent = '$0.00';
+                const todayCostEl = document.getElementById('usage-today-cost');
+                if (todayCostEl) todayCostEl.textContent = '$0.00';
+                if (todayTokensEl) todayTokensEl.classList.add('hidden');
+                if (totalTokensEl) totalTokensEl.textContent = '0 tokens';
+                return;
+            }
+
+            grid.innerHTML = models.map(m => {
+                const inputK = Math.round(m.input / 1000);
+                const outputK = Math.round(m.output / 1000);
+                const inputM = (m.input / 1_000_000).toFixed(2);
+                const outputM = (m.output / 1_000_000).toFixed(2);
+                const inputDisplay = inputK >= 1000 ? inputM + 'M' : inputK + 'K';
+                const outputDisplay = outputK >= 1000 ? outputM + 'M' : outputK + 'K';
+                const color = getModelColor(m.model);
+                return `
+                    <div class="py-1.5 border-b border-gray-800/30 last:border-0 flex items-center" style="gap: 10px;">
+                        <span class="w-3.5 h-3.5 rounded-sm flex-shrink-0" style="background: ${color}"></span>
+                        <span class="text-sm font-semibold text-gray-200">${m.model}</span>
+                        <span class="text-gray-600">›</span>
+                        <span style="font-size: 12px;" class="text-gray-400">In: ${inputDisplay}</span>
+                        <span style="font-size: 12px;" class="text-cyan-400 font-medium">$${m.inputCost.toFixed(2)}</span>
+                        <span style="font-size: 12px;" class="text-gray-400 ml-2">Out: ${outputDisplay}</span>
+                        <span style="font-size: 12px;" class="text-cyan-400 font-medium">$${m.outputCost.toFixed(2)}</span>
+                        <span style="font-size: 13px;" class="text-cyan-400 ml-auto font-bold">$${m.cost.toFixed(2)}</span>
+                    </div>
+                `;
+            }).join('');
+
+            document.getElementById('usage-total-large').textContent = `$${data.totalCost.toFixed(2)}`;
+
+            // Calculate and display today's cost (use local date to match backend)
+            const todayKey = data.today || (() => {
+                const now = new Date();
+                return `${now.getFullYear()}-${String(now.getMonth() + 1).padStart(2, '0')}-${String(now.getDate()).padStart(2, '0')}`;
+            })();
+            const todayEntry = (data.daily || []).find(d => d.date === todayKey) || {};
+            const todayCost = todayEntry.cost || 0;
+            const todayCostEl = document.getElementById('usage-today-cost');
+            if (todayCostEl) {
+                todayCostEl.textContent = `$${todayCost.toFixed(2)}`;
+            }
+            if (todayTokensEl) {
+                const totalTokens = (todayEntry.input || 0) + (todayEntry.output || 0);
+                if (totalTokens > 0) {
+                    todayTokensEl.textContent = `${formatTokenCount(totalTokens)} tokens`;
+                    todayTokensEl.classList.remove('hidden');
+                } else {
+                    todayTokensEl.classList.add('hidden');
+                }
+            }
+            if (totalTokensEl) {
+                const totals = models.reduce((acc, m) => {
+                    acc.input += Number(m.input) || 0;
+                    acc.output += Number(m.output) || 0;
+                    return acc;
+                }, { input: 0, output: 0 });
+                const totalTokens = totals.input + totals.output;
+                totalTokensEl.textContent = `${formatTokenCount(totalTokens)} tokens`;
+            }
+
+            // Render charts
+            renderCharts(data);
+        }
+
+        // Chart instances for cleanup
+        let dailyChartInstance = null;
+        let modelChartInstance = null;
+
+        // Color palette aligned with quota cards (red, white, blue-purple)
+        function getCssColor(varName, fallback) {
+            const value = getComputedStyle(document.documentElement).getPropertyValue(varName).trim();
+            return value || fallback;
+        }
+
+        function getModelColor(model) {
+            const m = (model || '').toLowerCase();
+            if (m.includes('gpt') || m.includes('o1') || m.includes('o3') || m.includes('o4')) {
+                return getCssColor('--white-glow', '#ffffff');
+            }
+            if (m.includes('claude') || m.includes('opus') || m.includes('sonnet')) {
+                return getCssColor('--copilot-red', '#f85149');
+            }
+            if (m.includes('gemini') || m.includes('flash') || m.includes('pro')) {
+                return getCssColor('--anti-purple', '#6b4da3');
+            }
+            return getCssColor('--anti-blue', '#4796E3');
+        }
+
+        function renderCharts(data) {
+            // Daily Bar Chart
+            const dailyCtx = document.getElementById('daily-chart');
+            if (!dailyCtx) return;
+
+            // Destroy old chart if exists
+            if (dailyChartInstance) {
+                dailyChartInstance.destroy();
+            }
+
+            const dailyData = data.daily || [];
+            const labels = dailyData.map(d => {
+                const date = new Date(d.date);
+                return `${date.getMonth() + 1}/${date.getDate()}`;
+            });
+            const values = dailyData.map(d => d.cost);
+
+            dailyChartInstance = new Chart(dailyCtx, {
+                type: 'bar',
+                data: {
+                    labels: labels.length > 0 ? labels : ['No data'],
+                    datasets: [{
+                        data: values.length > 0 ? values : [0],
+                        backgroundColor: 'rgba(110, 231, 255, 0.6)',
+                        borderColor: 'rgba(110, 231, 255, 1)',
+                        borderWidth: 1,
+                        borderRadius: 4,
+                        barPercentage: 0.7,
+                        categoryPercentage: 0.8,
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: {
+                        legend: { display: false },
+                        tooltip: {
+                            callbacks: {
+                                label: function (context) {
+                                    return '$' + context.raw.toFixed(2);
+                                }
+                            }
+                        }
+                    },
+                    scales: {
+                        x: {
+                            grid: { display: false },
+                            ticks: { color: '#9ca3af', font: { size: 13 } }
+                        },
+                        y: {
+                            beginAtZero: true,
+                            grid: { color: 'rgba(255,255,255,0.05)' },
+                            ticks: {
+                                color: '#9ca3af',
+                                font: { size: 13 },
+                                callback: v => '$' + v.toFixed(2)
+                            }
+                        }
+                    }
+                }
+            });
+
+            // Model Pie Chart
+            const modelCtx = document.getElementById('model-chart');
+            if (!modelCtx) return;
+
+            if (modelChartInstance) {
+                modelChartInstance.destroy();
+            }
+
+            const models = data.models || [];
+            const pieLabels = models.map(m => m.model);
+            const pieValues = models.map(m => m.cost);
+            const pieColors = models.map(m => getModelColor(m.model));
+
+            modelChartInstance = new Chart(modelCtx, {
+                type: 'doughnut',
+                data: {
+                    labels: pieLabels.length > 0 ? pieLabels : ['No data'],
+                    datasets: [{
+                        data: pieValues.length > 0 ? pieValues : [1],
+                        backgroundColor: pieColors.length > 0 ? pieColors : ['#374151'],
+                        borderWidth: 0,
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    cutout: '50%',
+                    plugins: {
+                        legend: {
+                            display: false
+                        },
+                        tooltip: {
+                            callbacks: {
+                                label: function (context) {
+                                    return context.label + ': $' + context.raw.toFixed(2);
+                                }
+                            }
+                        }
+                    }
+                }
+            });
+        }
+
+        async function resetUsageData() {
+            if (!confirm('Clear all usage data?')) return;
+            try {
+                await fetch(`${API_BASE}/usage/reset`, { method: 'POST' });
+                await fetchUsageData(false);
+                showSettingsToast('Usage data cleared');
+            } catch (e) {
+                showSettingsToast('Failed to reset usage', true);
+            }
+        }
+    </script>
+</body>
+
+</html>

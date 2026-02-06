@@ -1,0 +1,23 @@
+services:
+  new-api:
+    image: calciumion/new-api:latest
+    container_name: new-api
+    restart: always
+    ports:
+      - "3001:3000"
+    volumes:
+      - ./data:/data
+    environment:
+      - TZ=Asia/Shanghai
+      - SQL_DSN=  # 留空使用 SQLite
+      - REDIS_CONN_STRING=  # 留空不使用 Redis
+      - SESSION_SECRET=your-session-secret-change-me
+      - STREAMING_TIMEOUT=60
+      - ENABLE_BATCH_UPDATE=true
+    extra_hosts:
+      - "host.docker.internal:host-gateway"
+    healthcheck:
+      test: ["CMD", "wget", "-qO-", "http://localhost:3000/api/status"]
+      interval: 30s
+      timeout: 10s
+      retries: 3

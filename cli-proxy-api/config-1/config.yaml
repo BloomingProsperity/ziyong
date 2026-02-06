@@ -1,0 +1,48 @@
+# CLIProxyAPI - GPT 组1 配置
+# 3个账号: annawallace, fenghuangchuanqi, hhkkffgg
+
+host: ""
+port: 8317
+# API 密钥 (New API 用此密钥连接)
+api-keys:
+  - "sk-t62tslySgJ1ZaesZF1D608QHFs1xXxjj"
+# 代理IP-C (日本静态住宅IP)
+# 日本静态住宅代理 (IPRoyal)
+proxy-url: "socks5://14aea1862cd31:2123e0e0cf@175.29.203.124:12324"
+# 认证目录
+auth-dir: "/root/.cli-proxy-api"
+# 日志
+debug: false
+logging-to-file: true
+logs-max-total-size-mb: 100
+# 请求重试
+request-retry: 3
+max-retry-interval: 10
+# 路由策略 - 轮询
+routing:
+  strategy: "round-robin"
+# 流式传输
+streaming:
+  keepalive-seconds: 15
+  bootstrap-retries: 1
+# 管理 API
+remote-management:
+  allow-remote: true
+  secret-key: "$2a$10$NrRb5ZM.88HcrFawi0iQRuU6EyqS6LHYBXwllgX2Ecd4Cy7dVcCt2"
+  disable-control-panel: false
+oauth-model-alias:
+  antigravity:
+    - name: rev19-uic3-1p
+      alias: gemini-2.5-computer-use-preview-10-2025
+    - name: gemini-3-pro-image
+      alias: gemini-3-pro-image-preview
+    - name: gemini-3-pro-high
+      alias: gemini-3-pro-preview
+    - name: gemini-3-flash
+      alias: gemini-3-flash-preview
+    - name: claude-sonnet-4-5
+      alias: gemini-claude-sonnet-4-5
+    - name: claude-sonnet-4-5-thinking
+      alias: gemini-claude-sonnet-4-5-thinking
+    - name: claude-opus-4-5-thinking
+      alias: gemini-claude-opus-4-5-thinking

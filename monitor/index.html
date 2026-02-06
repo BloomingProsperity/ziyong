@@ -1,0 +1,241 @@
+<!DOCTYPE html>
+<html lang="zh">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AI Proxy 监控面板</title>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; background: #1a1a2e; color: #eee; padding: 20px; }
+        h1 { text-align: center; margin-bottom: 30px; color: #00d9ff; }
+        .grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(400px, 1fr)); gap: 20px; }
+        .card { background: #16213e; border-radius: 12px; padding: 20px; box-shadow: 0 4px 15px rgba(0,0,0,0.3); }
+        .card h2 { color: #00d9ff; margin-bottom: 15px; display: flex; align-items: center; gap: 10px; }
+        .card h2 .status { width: 12px; height: 12px; border-radius: 50%; }
+        .card h2 .status.online { background: #00ff88; box-shadow: 0 0 10px #00ff88; }
+        .card h2 .status.offline { background: #ff4444; box-shadow: 0 0 10px #ff4444; }
+        .stat { display: flex; justify-content: space-between; padding: 10px 0; border-bottom: 1px solid #2a2a4a; }
+        .stat:last-child { border-bottom: none; }
+        .stat-label { color: #888; }
+        .stat-value { font-weight: bold; }
+        .stat-value.good { color: #00ff88; }
+        .stat-value.warning { color: #ffaa00; }
+        .stat-value.bad { color: #ff4444; }
+        .accounts { margin-top: 15px; }
+        .account { background: #1a1a3e; padding: 10px 15px; border-radius: 8px; margin: 8px 0; display: flex; justify-content: space-between; align-items: center; }
+        .account-email { font-size: 14px; }
+        .account-type { font-size: 12px; padding: 3px 8px; border-radius: 4px; background: #00d9ff33; color: #00d9ff; }
+        .refresh-btn { position: fixed; bottom: 20px; right: 20px; background: #00d9ff; color: #000; border: none; padding: 15px 25px; border-radius: 8px; cursor: pointer; font-weight: bold; }
+        .refresh-btn:hover { background: #00b8d4; }
+        .loading { text-align: center; padding: 20px; color: #888; }
+        .test-btn { background: #00d9ff33; color: #00d9ff; border: 1px solid #00d9ff; padding: 5px 10px; border-radius: 4px; cursor: pointer; font-size: 12px; }
+        .test-btn:hover { background: #00d9ff; color: #000; }
+        .response-time { font-size: 12px; color: #888; margin-top: 5px; }
+    </style>
+</head>
+<body>
+    <h1>🚀 AI Proxy 监控面板</h1>
+
+    <div class="grid">
+        <!-- GPT Service -->
+        <div class="card">
+            <h2><span class="status" id="gpt-status"></span> GPT-5 服务 (codex-1)</h2>
+            <div class="stat">
+                <span class="stat-label">端口</span>
+                <span class="stat-value">5005</span>
+            </div>
+            <div class="stat">
+                <span class="stat-label">状态</span>
+                <span class="stat-value" id="gpt-state">检查中...</span>
+            </div>
+            <div class="stat">
+                <span class="stat-label">响应时间</span>
+                <span class="stat-value" id="gpt-latency">-</span>
+            </div>
+            <div class="stat">
+                <span class="stat-label">账号数量</span>
+                <span class="stat-value good">5个</span>
+            </div>
+            <div class="accounts" id="gpt-accounts">
+                <div class="account"><span class="account-email">huakaifugui2.0@gmail.com</span><span class="account-type">Team</span></div>
+                <div class="account"><span class="account-email">fenghuangchuanqi2.0@gmail.com</span><span class="account-type">Team</span></div>
+                <div class="account"><span class="account-email">annawallace962@supertopup.my.id</span><span class="account-type">Team</span></div>
+                <div class="account"><span class="account-email">hhkkffgg@proton.me</span><span class="account-type">Team</span></div>
+                <div class="account"><span class="account-email">jixiangruyi3.0pro@gmail.com</span><span class="account-type">Plus</span></div>
+            </div>
+            <button class="test-btn" onclick="testGPT()">测试API</button>
+            <div class="response-time" id="gpt-test-result"></div>
+        </div>
+
+        <!-- Claude Service -->
+        <div class="card">
+            <h2><span class="status" id="claude-status"></span> Claude 服务 (codex-2)</h2>
+            <div class="stat">
+                <span class="stat-label">端口</span>
+                <span class="stat-value">5006</span>
+            </div>
+            <div class="stat">
+                <span class="stat-label">状态</span>
+                <span class="stat-value" id="claude-state">检查中...</span>
+            </div>
+            <div class="stat">
+                <span class="stat-label">响应时间</span>
+                <span class="stat-value" id="claude-latency">-</span>
+            </div>
+            <div class="stat">
+                <span class="stat-label">账号数量</span>
+                <span class="stat-value good">3个</span>
+            </div>
+            <div class="accounts" id="claude-accounts">
+                <div class="account"><span class="account-email">fenghuangchuanqi2.0@gmail.com</span><span class="account-type">Pro</span></div>
+                <div class="account"><span class="account-email">8vbsxhdfxc@privaterelay.appleid.com</span><span class="account-type">Pro</span></div>
+                <div class="account"><span class="account-email">huakaifugui2026@hotmail.com</span><span class="account-type">Pro</span></div>
+            </div>
+            <button class="test-btn" onclick="testClaude()">测试API</button>
+            <div class="response-time" id="claude-test-result"></div>
+        </div>
+
+        <!-- New API Gateway -->
+        <div class="card">
+            <h2><span class="status" id="newapi-status"></span> New API 网关</h2>
+            <div class="stat">
+                <span class="stat-label">端口</span>
+                <span class="stat-value">3001</span>
+            </div>
+            <div class="stat">
+                <span class="stat-label">状态</span>
+                <span class="stat-value" id="newapi-state">检查中...</span>
+            </div>
+            <div class="stat">
+                <span class="stat-label">管理后台</span>
+                <a href="http://localhost:3001" target="_blank" style="color: #00d9ff;">打开</a>
+            </div>
+        </div>
+
+        <!-- Proxy Info -->
+        <div class="card">
+            <h2>🌐 代理配置</h2>
+            <div class="stat">
+                <span class="stat-label">GPT代理IP</span>
+                <span class="stat-value">175.29.203.124</span>
+            </div>
+            <div class="stat">
+                <span class="stat-label">Claude代理IP</span>
+                <span class="stat-value">175.29.206.206</span>
+            </div>
+            <div class="stat">
+                <span class="stat-label">代理类型</span>
+                <span class="stat-value">日本静态住宅</span>
+            </div>
+        </div>
+    </div>
+
+    <button class="refresh-btn" onclick="checkAll()">🔄 刷新状态</button>
+
+    <script>
+        const GPT_URL = 'http://localhost:5005';
+        const CLAUDE_URL = 'http://localhost:5006';
+        const NEWAPI_URL = 'http://localhost:3001';
+        const GPT_KEY = 'sk-t62tslySgJ1ZaesZF1D608QHFs1xXxjj';
+        const CLAUDE_KEY = 'sk-claude-huakai-2024';
+
+        async function checkService(url, statusId, stateId, latencyId) {
+            const start = Date.now();
+            try {
+                const res = await fetch(url + '/v1/models', {
+                    headers: { 'Authorization': 'Bearer ' + (url === GPT_URL ? GPT_KEY : CLAUDE_KEY) }
+                });
+                const latency = Date.now() - start;
+                if (res.ok) {
+                    document.getElementById(statusId).className = 'status online';
+                    document.getElementById(stateId).textContent = '在线';
+                    document.getElementById(stateId).className = 'stat-value good';
+                    document.getElementById(latencyId).textContent = latency + 'ms';
+                    document.getElementById(latencyId).className = 'stat-value ' + (latency < 500 ? 'good' : latency < 2000 ? 'warning' : 'bad');
+                } else {
+                    throw new Error('Not OK');
+                }
+            } catch (e) {
+                document.getElementById(statusId).className = 'status offline';
+                document.getElementById(stateId).textContent = '离线';
+                document.getElementById(stateId).className = 'stat-value bad';
+                document.getElementById(latencyId).textContent = '-';
+            }
+        }
+
+        async function checkNewAPI() {
+            try {
+                const res = await fetch(NEWAPI_URL + '/api/status');
+                if (res.ok) {
+                    document.getElementById('newapi-status').className = 'status online';
+                    document.getElementById('newapi-state').textContent = '在线';
+                    document.getElementById('newapi-state').className = 'stat-value good';
+                } else {
+                    throw new Error('Not OK');
+                }
+            } catch (e) {
+                document.getElementById('newapi-status').className = 'status offline';
+                document.getElementById('newapi-state').textContent = '离线';
+                document.getElementById('newapi-state').className = 'stat-value bad';
+            }
+        }
+
+        async function testGPT() {
+            document.getElementById('gpt-test-result').textContent = '测试中...';
+            const start = Date.now();
+            try {
+                const res = await fetch(GPT_URL + '/v1/chat/completions', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json', 'Authorization': 'Bearer ' + GPT_KEY },
+                    body: JSON.stringify({ model: 'gpt-5-codex-mini', max_tokens: 5, messages: [{ role: 'user', content: 'hi' }] })
+                });
+                const latency = Date.now() - start;
+                const data = await res.json();
+                if (data.choices) {
+                    document.getElementById('gpt-test-result').textContent = '✅ 成功 - ' + latency + 'ms';
+                    document.getElementById('gpt-test-result').style.color = '#00ff88';
+                } else {
+                    throw new Error(data.error?.message || 'Unknown error');
+                }
+            } catch (e) {
+                document.getElementById('gpt-test-result').textContent = '❌ 失败 - ' + e.message;
+                document.getElementById('gpt-test-result').style.color = '#ff4444';
+            }
+        }
+
+        async function testClaude() {
+            document.getElementById('claude-test-result').textContent = '测试中...';
+            const start = Date.now();
+            try {
+                const res = await fetch(CLAUDE_URL + '/v1/chat/completions', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json', 'Authorization': 'Bearer ' + CLAUDE_KEY },
+                    body: JSON.stringify({ model: 'claude-sonnet-4-5-20250929', max_tokens: 5, messages: [{ role: 'user', content: 'hi' }] })
+                });
+                const latency = Date.now() - start;
+                const data = await res.json();
+                if (data.choices) {
+                    document.getElementById('claude-test-result').textContent = '✅ 成功 - ' + latency + 'ms';
+                    document.getElementById('claude-test-result').style.color = '#00ff88';
+                } else {
+                    throw new Error(data.error?.message || 'Unknown error');
+                }
+            } catch (e) {
+                document.getElementById('claude-test-result').textContent = '❌ 失败 - ' + e.message;
+                document.getElementById('claude-test-result').style.color = '#ff4444';
+            }
+        }
+
+        function checkAll() {
+            checkService(GPT_URL, 'gpt-status', 'gpt-state', 'gpt-latency');
+            checkService(CLAUDE_URL, 'claude-status', 'claude-state', 'claude-latency');
+            checkNewAPI();
+        }
+
+        // Initial check
+        checkAll();
+        // Auto refresh every 30 seconds
+        setInterval(checkAll, 30000);
+    </script>
+</body>
+</html>

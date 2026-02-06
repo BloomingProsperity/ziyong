@@ -1,0 +1,58 @@
+# CLIProxyAPI - Claude 配置
+# Claude Pro/Max/Team 账号
+
+host: ""
+port: 8317
+# API 密钥 (New API 用此密钥连接)
+api-keys:
+  - "sk-claude-huakai-2024"
+# 代理IP (日本静态住宅IP)
+proxy-url: "socks5://14aea1862cd31:2123e0e0cf@175.29.206.206:12324"
+# 认证目录
+auth-dir: "/root/.cli-proxy-api"
+# 日志
+debug: true
+logging-to-file: true
+logs-max-total-size-mb: 100
+# 请求重试
+request-retry: 3
+max-retry-interval: 10
+# 路由策略 - 轮询
+routing:
+  strategy: "round-robin"
+# 禁用配额超限时的自动降级
+quota-exceeded:
+  switch-project: false
+  switch-preview-model: false
+# 流式传输
+streaming:
+  keepalive-seconds: 15
+  bootstrap-retries: 1
+# 管理 API
+remote-management:
+  allow-remote: true
+  secret-key: "$2a$10$0swo6McITeF8zvyLy9t6vOdSKnTUfAyGYkRn7mDsbVVcT0u5VZglO"
+  disable-control-panel: false
+oauth-model-alias:
+  claude:
+    - name: claude-opus-4-5-20251101
+      alias: claude-opus-4-5-20251101
+    - name: claude-sonnet-4-5-20250929
+      alias: claude-sonnet-4-5-20250929
+    - name: claude-haiku-4-5-20251001
+      alias: claude-haiku-4-5-20251001
+  antigravity:
+    - name: rev19-uic3-1p
+      alias: gemini-2.5-computer-use-preview-10-2025
+    - name: gemini-3-pro-image
+      alias: gemini-3-pro-image-preview
+    - name: gemini-3-pro-high
+      alias: gemini-3-pro-preview
+    - name: gemini-3-flash
+      alias: gemini-3-flash-preview
+    - name: claude-sonnet-4-5
+      alias: gemini-claude-sonnet-4-5
+    - name: claude-sonnet-4-5-thinking
+      alias: gemini-claude-sonnet-4-5-thinking
+    - name: claude-opus-4-5-thinking
+      alias: gemini-claude-opus-4-5-thinking

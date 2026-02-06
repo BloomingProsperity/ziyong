@@ -1,0 +1,9 @@
+tunnel: b426308d-8c58-4bf3-a94a-5794b2a22b3a
+credentials-file: C:\Users\h\.cloudflared\b426308d-8c58-4bf3-a94a-5794b2a22b3a.json
+
+ingress:
+  # new-api 对外提供 API 服务
+  - hostname: api.huakai123.com
+    service: http://localhost:3001
+  # 默认返回 404
+  - service: http_status:404

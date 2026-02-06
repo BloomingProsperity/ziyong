@@ -52,3 +52,9 @@ newapi_cookie.txt
 .claude/
 .trae/
 nul
+
+# Auth tokens & account data
+cli-proxy-api/auth-*/*.json
+clove/data-*/accounts.json
+clove/data-*/settings.json
+claude-code-proxy/tokens.json

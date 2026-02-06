@@ -1,0 +1,1537 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Anti-API Routing</title>
+    <link rel="icon"
+        href="https://t0.gstatic.com/faviconV2?client=SOCIAL&type=FAVICON&fallback_opts=TYPE,SIZE,URL&url=http://antigravity.google&size=32"
+        type="image/x-icon">
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        :root {
+            --bg-black: #0a0a0a;
+            --panel: rgba(17, 17, 17, 0.9);
+            --panel-border: rgba(59, 42, 84, 0.4);
+            --node-border: rgba(255, 255, 255, 0.06);
+            --node-accent: #6ee7ff;
+            --node-glow: rgba(110, 231, 255, 0.35);
+            --grid: rgba(255, 255, 255, 0.04);
+            --grid-strong: rgba(255, 255, 255, 0.08);
+            --white-glow: #ffffff;
+        }
+
+        body {
+            background: var(--bg-black);
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+            color: #d1d5db;
+        }
+
+        .grid-bg {
+            background-image:
+                linear-gradient(var(--grid) 1px, transparent 1px),
+                linear-gradient(90deg, var(--grid) 1px, transparent 1px);
+            background-size: 32px 32px;
+        }
+
+        .grid-bg::after {
+            content: "";
+            position: absolute;
+            inset: 0;
+            background-image:
+                linear-gradient(var(--grid-strong) 1px, transparent 1px),
+                linear-gradient(90deg, var(--grid-strong) 1px, transparent 1px);
+            background-size: 160px 160px;
+            pointer-events: none;
+            opacity: 0.6;
+        }
+
+        .panel {
+            background: var(--panel);
+            border: 1px solid var(--panel-border);
+            backdrop-filter: blur(12px);
+        }
+
+        #flow-panel .panel,
+        #account-panel .panel {
+            background: #000;
+        }
+
+        #flow-panel .grid-bg,
+        #account-panel .grid-bg {
+            background-image: none;
+        }
+
+        #flow-panel .grid-bg::after,
+        #account-panel .grid-bg::after {
+            display: none;
+        }
+
+        .node {
+            border: 1px solid var(--node-border);
+            background: rgba(20, 20, 20, 0.9);
+            box-shadow: 0 0 0 rgba(0, 0, 0, 0);
+            transition: transform 0.2s ease, box-shadow 0.2s ease, border-color 0.2s ease;
+        }
+
+        .node:hover {
+            transform: translateY(-2px);
+            border-color: var(--node-accent);
+            box-shadow: 0 0 20px var(--node-glow);
+        }
+
+        .node-palette {
+            background: linear-gradient(145deg, rgba(110, 231, 255, 0.12), rgba(10, 10, 10, 0.9));
+            border-color: rgba(110, 231, 255, 0.2);
+            box-shadow: 0 0 12px rgba(110, 231, 255, 0.08);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .node-palette::before {
+            content: "";
+            position: absolute;
+            inset: 0;
+            background: linear-gradient(120deg, rgba(110, 231, 255, 0.12), transparent 50%);
+            opacity: 0.3;
+            pointer-events: none;
+        }
+
+        .node-palette::after {
+            content: "";
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 1px;
+            background: linear-gradient(90deg, rgba(110, 231, 255, 0.6), rgba(110, 231, 255, 0));
+            opacity: 0.5;
+        }
+
+        .panel-scroll {
+            scrollbar-width: thin;
+            scrollbar-color: rgba(110, 231, 255, 0.3) transparent;
+            padding-right: 6px;
+        }
+
+        .panel-scroll::-webkit-scrollbar {
+            width: 6px;
+        }
+
+        .panel-scroll::-webkit-scrollbar-track {
+            background: transparent;
+        }
+
+        .panel-scroll::-webkit-scrollbar-thumb {
+            background: rgba(110, 231, 255, 0.3);
+            border-radius: 3px;
+        }
+
+        .panel-scroll::-webkit-scrollbar-thumb:hover {
+            background: rgba(110, 231, 255, 0.5);
+        }
+
+        .drop-slot {
+            width: 100%;
+            min-height: 84px;
+            border: 1px dashed rgba(255, 255, 255, 0.1);
+            border-radius: 12px;
+            padding: 16px 16px;
+            text-align: center;
+            color: rgba(255, 255, 255, 0.3);
+            transition: border-color 0.2s ease, color 0.2s ease;
+            background: linear-gradient(135deg, rgba(110, 231, 255, 0.05), rgba(255, 255, 255, 0.02));
+            position: relative;
+        }
+
+        .drop-slot.active {
+            border-color: var(--node-accent);
+            color: var(--node-accent);
+        }
+
+        .drop-slot::after {
+            content: "+";
+            position: absolute;
+            top: 8px;
+            right: 10px;
+            font-size: 14px;
+            color: rgba(255, 255, 255, 0.2);
+        }
+
+        .account-pill {
+            background: rgba(255, 255, 255, 0.04);
+            border: 1px solid rgba(255, 255, 255, 0.08);
+        }
+
+        .node {
+            padding-top: 14px !important;
+            padding-bottom: 14px !important;
+        }
+
+        .action-btn {
+            padding-top: 10px !important;
+            padding-bottom: 10px !important;
+        }
+
+        .account-pill {
+            padding-top: 4px !important;
+            padding-bottom: 4px !important;
+        }
+
+        .action-wrap {
+            perspective: 1000px;
+        }
+
+        .refresh-btn {
+            perspective: 1000px;
+        }
+
+        .refresh-btn button {
+            transform-style: preserve-3d;
+            transition: box-shadow 0.3s ease, background 0.3s ease, border-color 0.3s ease;
+            background: rgba(17, 17, 17, 0.9);
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(59, 42, 84, 0.3);
+        }
+
+        .action-btn {
+            transform-style: preserve-3d;
+            transition: box-shadow 0.3s ease, background 0.3s ease, border-color 0.3s ease;
+            background: rgba(17, 17, 17, 0.9);
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(59, 42, 84, 0.3);
+        }
+
+        #refresh-btn:hover {
+            background: rgba(255, 255, 255, 0.15);
+            border-color: var(--white-glow);
+            box-shadow: 0 0 20px rgba(255, 255, 255, 0.4),
+                0 0 40px rgba(255, 255, 255, 0.2);
+        }
+
+        #back-btn:hover {
+            background: rgba(71, 150, 227, 0.15);
+            border-color: #4796E3;
+            box-shadow: 0 0 20px rgba(71, 150, 227, 0.4),
+                0 0 40px rgba(71, 150, 227, 0.2);
+        }
+
+        #save-btn:hover {
+            background: rgba(34, 197, 94, 0.18);
+            border-color: rgba(34, 197, 94, 0.7);
+            box-shadow: 0 0 20px rgba(34, 197, 94, 0.45),
+                0 0 42px rgba(34, 197, 94, 0.25);
+        }
+
+        #new-btn:hover {
+            background: rgba(110, 231, 255, 0.18);
+            border-color: rgba(110, 231, 255, 0.7);
+            box-shadow: 0 0 20px rgba(110, 231, 255, 0.45),
+                0 0 42px rgba(110, 231, 255, 0.25);
+        }
+
+        .flow-canvas {
+            position: relative;
+            padding: 12px 6px 28px;
+        }
+
+        .flow-lines {
+            position: absolute;
+            top: 0;
+            left: 0;
+            pointer-events: none;
+            z-index: 1;
+        }
+
+        .flow-node {
+            position: relative;
+            border-color: rgba(110, 231, 255, 0.3);
+            background: linear-gradient(145deg, rgba(110, 231, 255, 0.14), rgba(10, 10, 10, 0.9));
+            box-shadow: 0 0 24px rgba(110, 231, 255, 0.12);
+            overflow: hidden;
+            z-index: 2;
+        }
+
+        .flow-node::before {
+            content: "";
+            position: absolute;
+            inset: 0;
+            background: linear-gradient(120deg, rgba(110, 231, 255, 0.18), transparent 50%);
+            opacity: 0.4;
+            pointer-events: none;
+        }
+
+        .flow-node::after {
+            content: "";
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 2px;
+            background: linear-gradient(90deg, rgba(110, 231, 255, 0.8), rgba(110, 231, 255, 0));
+            opacity: 0.6;
+        }
+
+        .flow-node.drop-target {
+            border-color: rgba(110, 231, 255, 0.85);
+            box-shadow: 0 0 26px rgba(110, 231, 255, 0.35);
+        }
+
+        .flow-badge {
+            width: 22px;
+            height: 22px;
+            border-radius: 999px;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            background: rgba(110, 231, 255, 0.2);
+            color: #b9f3ff;
+            font-size: 11px;
+            font-weight: 700;
+        }
+
+        .flow-port {
+            position: absolute;
+            left: 50%;
+            width: 10px;
+            height: 10px;
+            border-radius: 999px;
+            background: rgba(10, 10, 10, 0.9);
+            border: 1px solid rgba(110, 231, 255, 0.6);
+            box-shadow: 0 0 10px rgba(110, 231, 255, 0.4);
+            transform: translateX(-50%);
+            pointer-events: none;
+        }
+
+        .flow-port-top {
+            top: -6px;
+        }
+
+        .flow-port-bottom {
+            bottom: -6px;
+        }
+
+        .flow-line-core {
+            stroke: url(#flow-gradient);
+            stroke-width: 2.2;
+            fill: none;
+            opacity: 0.9;
+            stroke-dasharray: 12 8;
+            animation: flow-dash 8s linear infinite;
+        }
+
+        .flow-line-glow {
+            stroke: url(#flow-gradient);
+            stroke-width: 6;
+            fill: none;
+            opacity: 0.25;
+            filter: url(#flow-glow);
+        }
+
+        @keyframes flow-dash {
+            to {
+                stroke-dashoffset: -200;
+            }
+        }
+    </style>
+    <style id="iframe-styles">
+        /* Iframe embed mode styles - match parent page background */
+        body.iframe-mode {
+            padding: 0 !important;
+            background: #000000 !important;
+            --bg-black: #000000;
+            overflow: hidden !important;
+        }
+
+        body.iframe-mode .main-container {
+            max-width: 100% !important;
+            margin: 0 !important;
+            padding: 8px !important;
+            margin-top: 0 !important;
+            gap: 0 !important;
+        }
+
+        body.iframe-mode .main-container>.space-y-6 {
+            margin-top: 0 !important;
+        }
+
+        body.iframe-mode header #back-btn {
+            display: none !important;
+        }
+
+        body.iframe-mode header .action-wrap {
+            display: none !important;
+        }
+
+        .toggle-switch {
+            appearance: none;
+            width: 48px;
+            height: 28px;
+            background: #333;
+            border-radius: 14px;
+            position: relative;
+            cursor: pointer;
+            transition: background 0.3s;
+            flex-shrink: 0;
+        }
+
+        .toggle-switch::before {
+            content: '';
+            position: absolute;
+            top: 2px;
+            left: 2px;
+            width: 24px;
+            height: 24px;
+            background: #666;
+            border-radius: 50%;
+            transition: all 0.3s;
+        }
+
+        .toggle-switch:checked {
+            background: linear-gradient(135deg, #22d3ee, #3b82f6);
+        }
+
+        .toggle-switch:checked::before {
+            left: 22px;
+            background: white;
+        }
+
+        .routing-panels {
+            height: calc(100vh - 160px);
+            min-height: 520px;
+        }
+
+        .select-field {
+            appearance: none;
+            background-color: rgba(10, 10, 10, 0.8);
+            border: 1px solid rgba(110, 231, 255, 0.22);
+            color: #e5e7eb;
+            border-radius: 12px;
+            padding: 12px 36px 12px 12px;
+            font-size: 12px;
+            line-height: 1.2;
+            box-shadow: inset 0 0 0 1px rgba(110, 231, 255, 0.08);
+            background-image:
+                linear-gradient(45deg, transparent 50%, rgba(110, 231, 255, 0.9) 50%),
+                linear-gradient(135deg, rgba(110, 231, 255, 0.9) 50%, transparent 50%),
+                linear-gradient(90deg, rgba(10, 10, 10, 0.9), rgba(10, 10, 10, 0.9));
+            background-position:
+                calc(100% - 18px) 50%,
+                calc(100% - 12px) 50%,
+                100% 0;
+            background-size: 6px 6px, 6px 6px, 40px 100%;
+            background-repeat: no-repeat;
+        }
+
+        .select-field:focus {
+            outline: none;
+            border-color: rgba(110, 231, 255, 0.6);
+            box-shadow: 0 0 0 2px rgba(110, 231, 255, 0.18);
+        }
+    </style>
+</head>
+
+<body class="min-h-screen p-6">
+    <script>
+        // Immediately detect iframe before DOM renders
+        if (window.self !== window.top) {
+            document.body.classList.add('iframe-mode');
+        }
+    </script>
+    <div class="max-w-7xl mx-auto space-y-6 main-container">
+        <header class="flex items-center justify-between">
+            <div>
+                <h1 class="text-3xl font-bold text-gray-200">Routing</h1>
+                <p class="text-sm text-gray-500 mt-1 font-bold">Build model chains with fallback on 429</p>
+            </div>
+            <div class="flex items-center gap-4">
+                <div class="flex items-center gap-2 text-xs">
+                    <button id="tab-flow" onclick="setRoutingTab('flow')"
+                        class="action-btn px-3 py-2 rounded-lg font-bold text-gray-300">
+                        Flow Routing
+                    </button>
+                    <button id="tab-account" onclick="setRoutingTab('account')"
+                        class="action-btn px-3 py-2 rounded-lg font-bold text-gray-400">
+                        Account Routing
+                    </button>
+                </div>
+                <div class="refresh-btn inline-block" id="refresh-container">
+                    <button onclick="refreshRouting(true)" id="refresh-btn"
+                        class="px-4 py-2 rounded-lg font-bold text-gray-300 text-sm">
+                        Refresh
+                    </button>
+                </div>
+                <div class="action-wrap inline-block">
+                    <button onclick="window.location.href='/quota'" id="back-btn"
+                        class="action-btn px-4 py-2 rounded-lg font-bold text-gray-300 text-sm">
+                        Back to Quota
+                    </button>
+                </div>
+            </div>
+        </header>
+
+        <div id="flow-panel" class="grid gap-6 routing-panels" style="grid-template-columns: 1fr 1.5fr 1fr;">
+            <!-- Accounts Panel -->
+            <aside class="panel rounded-2xl p-4 flex flex-col min-h-0">
+                <div class="mb-3 flex-shrink-0">
+                    <h2 class="text-sm uppercase tracking-[0.2em] text-gray-500">Accounts</h2>
+                    <p class="text-xs text-gray-600 mt-1">Drag a model block into the flow.</p>
+                </div>
+                <div id="account-list" class="space-y-4 flex-1 min-h-0 overflow-y-auto panel-scroll"></div>
+            </aside>
+
+            <!-- Flow Panel -->
+            <section class="relative panel rounded-2xl p-6 grid-bg overflow-hidden flex flex-col">
+                <div class="relative z-10 flex flex-col flex-1 min-h-0 overflow-hidden">
+                    <!-- Flow Header -->
+                    <div class="flex items-start justify-between gap-3 mb-4 flex-shrink-0">
+                        <div>
+                            <h2 class="text-sm uppercase tracking-[0.2em] text-gray-500">Flow</h2>
+                            <p class="text-xs text-gray-600 mt-1">Match by model name in requests.</p>
+                        </div>
+                        <div class="flex items-center gap-2">
+                            <input id="flow-name" placeholder="Model ID"
+                                class="bg-transparent border border-gray-700 rounded-lg px-2 py-2 text-xs text-gray-200 focus:outline-none focus:border-cyan-300 w-24 text-center"
+                                autocomplete="off" />
+                            <div class="action-wrap inline-block">
+                                <button onclick="newFlow()" id="new-btn"
+                                    class="action-btn px-3 py-2 rounded-lg font-bold text-gray-300 text-xs">
+                                    New
+                                </button>
+                            </div>
+                            <div class="action-wrap inline-block">
+                                <button onclick="saveRouting()" id="save-btn"
+                                    class="action-btn px-3 py-2 rounded-lg font-bold text-gray-300 text-xs">
+                                    Save
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                    <div id="save-status" class="text-xs text-gray-500 text-right mb-2 flex-shrink-0"></div>
+                    <!-- Scrollable Flow Canvas -->
+                    <div class="flow-scroll flex-1 min-h-0 overflow-y-auto panel-scroll">
+                        <div id="flow-canvas" class="flow-canvas flex flex-col gap-4 min-h-[240px]"></div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Saved Panel -->
+            <aside class="panel rounded-2xl p-4 flex flex-col min-h-0">
+                <div class="mb-3 flex-shrink-0">
+                    <h2 class="text-sm uppercase tracking-[0.2em] text-gray-500">Saved</h2>
+                    <p class="text-xs text-gray-600 mt-1">Edit, rename, or delete saved flows.</p>
+                </div>
+                <div id="saved-list" class="space-y-3 flex-1 min-h-0 overflow-y-auto panel-scroll"></div>
+            </aside>
+        </div>
+
+        <div id="account-panel" class="grid gap-6 hidden routing-panels" style="grid-template-columns: 1fr 2fr;">
+            <aside class="panel rounded-2xl p-4 flex flex-col min-h-0">
+                <div class="mb-3 flex-shrink-0">
+                    <h2 class="text-sm uppercase tracking-[0.2em] text-gray-500">Models</h2>
+                    <p class="text-xs text-gray-600 mt-1">Official model IDs only.</p>
+                </div>
+                <div id="account-model-list" class="space-y-2 flex-1 min-h-0 overflow-y-auto panel-scroll"></div>
+            </aside>
+
+            <section class="panel rounded-2xl p-6 flex flex-col min-h-0">
+                <div class="flex items-start justify-between gap-3 mb-4 flex-shrink-0">
+                    <div>
+                        <h2 class="text-sm uppercase tracking-[0.2em] text-gray-500">Account Chain</h2>
+                        <p class="text-xs text-gray-600 mt-1">Ordered provider/account fallback.</p>
+                    </div>
+                    <div class="flex items-center gap-2 text-xs text-gray-400">
+                        <label class="flex items-center gap-2 cursor-pointer">
+                            <input id="smart-switch" type="checkbox" class="toggle-switch">
+                            <span>Smart Switch</span>
+                        </label>
+                        <button id="account-save-btn" onclick="saveAccountRouting()"
+                            class="action-btn px-3 py-2 rounded-lg font-bold text-gray-300 text-xs">
+                            Save
+                        </button>
+                    </div>
+                </div>
+
+                <div id="account-route-title" class="text-sm text-gray-400 mb-3 flex-shrink-0">Select a model</div>
+
+                <div class="grid gap-3 mb-4 flex-shrink-0" style="grid-template-columns: 1fr 1fr auto;">
+                    <select id="account-provider-select" class="select-field w-full">
+                        <option value="">Provider</option>
+                    </select>
+                    <select id="account-account-select" class="select-field w-full">
+                        <option value="">Account</option>
+                    </select>
+                    <button onclick="addAccountRouteEntry()"
+                        class="action-btn px-3 py-2 rounded-lg font-bold text-gray-300 text-xs">
+                        Add
+                    </button>
+                </div>
+
+                <div id="account-route-list" class="space-y-3 flex-1 min-h-0 overflow-y-auto panel-scroll"></div>
+                <div id="account-route-hint" class="text-xs text-gray-600 mt-3 flex-shrink-0">
+                    Smart Switch on: auto entries expand by account order.
+                </div>
+            </section>
+        </div>
+    </div>
+
+    <script>
+        const API_BASE = 'http://localhost:8964';
+        const STORAGE_KEYS = {
+            activeFlow: 'anti-api-active-flow',
+            privacyMode: 'anti-api-privacy-mode',
+        };
+        const PROVIDER_ORDER = ['antigravity', 'codex', 'copilot'];
+        const MODEL_GROUPS = {
+            claudeGpt: ['claude-sonnet-4-5', 'claude-sonnet-4-5-thinking', 'claude-opus-4-5-thinking', 'gpt-oss-120b'],
+            gpro: ['gemini-3-pro-low', 'gemini-3-pro-high'],
+            gflash: ['gemini-3-flash'],
+        };
+
+        const dom = {
+            byId: (id) => document.getElementById(id),
+            qs: (sel, root = document) => root.querySelector(sel),
+            qsa: (sel, root = document) => Array.from(root.querySelectorAll(sel)),
+        };
+
+        function readBoolStorage(key, fallback = false) {
+            try {
+                const value = localStorage.getItem(key);
+                if (value === null) return fallback;
+                return value === 'true';
+            } catch {
+                return fallback;
+            }
+        }
+
+        function safeJsonParse(text) {
+            if (!text) return null;
+            try {
+                return JSON.parse(text);
+            } catch {
+                return null;
+            }
+        }
+
+        async function apiJson(path, options = {}) {
+            const response = await fetch(`${API_BASE}${path}`, options);
+            const text = await response.text();
+            const data = safeJsonParse(text);
+            if (!response.ok) {
+                const errorMessage = (data && (data.error || data.message)) ? (data.error || data.message) : (text || response.statusText);
+                throw new Error(errorMessage);
+            }
+            return data || {};
+        }
+
+        async function apiPost(path, body) {
+            return apiJson(path, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify(body),
+            });
+        }
+
+        let accounts = {};
+        let models = {};
+        let flows = [];
+        let flowEntries = [];
+        let activeFlowId = null;
+        let quotaData = null;  // Store quota data for model rendering
+        let accountRouting = { smartSwitch: false, routes: [] };
+        let officialModels = [];
+        let selectedAccountModelId = null;
+        let activeRoutingTab = 'flow';
+
+        // Privacy masking (synced from settings via localStorage cache)
+        function getPrivacyMode() {
+            return readBoolStorage(STORAGE_KEYS.privacyMode, false);
+        }
+
+        function maskEmail(email) {
+            if (!getPrivacyMode() || !email) return email;
+            const atIndex = email.indexOf('@');
+            if (atIndex < 0) return maskUsername(email);
+
+            const local = email.substring(0, atIndex);
+            const domain = email.substring(atIndex + 1);
+            const dotIndex = domain.lastIndexOf('.');
+
+            // Mask local part: first 2 + ** + last 2
+            let maskedLocal;
+            if (local.length <= 4) {
+                maskedLocal = local[0] + '**' + (local.length > 1 ? local[local.length - 1] : '');
+            } else {
+                maskedLocal = local.substring(0, 2) + '**' + local.substring(local.length - 2);
+            }
+
+            // Mask domain: first letter + ** + extension (e.g., g**.com)
+            const ext = dotIndex >= 0 ? domain.substring(dotIndex) : '';
+            const domainName = dotIndex >= 0 ? domain.substring(0, dotIndex) : domain;
+            const maskedDomain = (domainName.length > 0 ? domainName[0] : '') + '**' + ext;
+
+            return maskedLocal + '@' + maskedDomain;
+        }
+
+        function maskUsername(name) {
+            if (!getPrivacyMode() || !name) return name;
+            if (name.length <= 3) return name[0] + '*'.repeat(name.length - 1);
+            return name.substring(0, 3) + '*'.repeat(Math.min(4, name.length - 3));
+        }
+
+        function setRoutingTab(tab) {
+            activeRoutingTab = tab;
+            const flowPanel = dom.byId('flow-panel');
+            const accountPanel = dom.byId('account-panel');
+            const flowBtn = dom.byId('tab-flow');
+            const accountBtn = dom.byId('tab-account');
+
+            if (flowPanel) flowPanel.classList.toggle('hidden', tab !== 'flow');
+            if (accountPanel) accountPanel.classList.toggle('hidden', tab !== 'account');
+
+            if (flowBtn) {
+                flowBtn.classList.toggle('text-cyan-300', tab === 'flow');
+                flowBtn.classList.toggle('border-cyan-300/70', tab === 'flow');
+                flowBtn.classList.toggle('text-gray-300', tab !== 'flow');
+            }
+            if (accountBtn) {
+                accountBtn.classList.toggle('text-cyan-300', tab === 'account');
+                accountBtn.classList.toggle('border-cyan-300/70', tab === 'account');
+                accountBtn.classList.toggle('text-gray-300', tab !== 'account');
+            }
+
+            if (tab === 'flow') {
+                requestAnimationFrame(drawFlowLines);
+            }
+        }
+
+        function collectOfficialModels(modelData) {
+            const map = new Map();
+            Object.values(modelData || {}).forEach(list => {
+                (list || []).forEach(model => {
+                    if (!map.has(model.id)) {
+                        map.set(model.id, model.label || model.id);
+                    }
+                });
+            });
+            return Array.from(map.entries())
+                .map(([id, label]) => ({ id, label }))
+                .sort((a, b) => a.id.localeCompare(b.id));
+        }
+
+        function getProvidersForModel(modelId) {
+            return Object.entries(models)
+                .filter(([, list]) => (list || []).some(model => model.id === modelId))
+                .map(([provider]) => provider);
+        }
+
+        function getAccountRoute(modelId) {
+            return accountRouting.routes.find(route => route.modelId === modelId) || null;
+        }
+
+        function ensureAccountRoute(modelId) {
+            let route = getAccountRoute(modelId);
+            if (!route) {
+                route = { id: crypto.randomUUID(), modelId, entries: [] };
+                accountRouting.routes.push(route);
+            }
+            return route;
+        }
+
+        function renderAccountRouting() {
+            const smartSwitchInput = dom.byId('smart-switch');
+            if (smartSwitchInput) {
+                smartSwitchInput.checked = !!accountRouting.smartSwitch;
+                smartSwitchInput.onchange = () => {
+                    accountRouting.smartSwitch = smartSwitchInput.checked;
+                    renderAccountRouteEditor();
+                    void persistAccountRoutingOnly();
+                };
+            }
+
+            renderAccountModels();
+            if (!selectedAccountModelId && officialModels.length > 0) {
+                selectedAccountModelId = officialModels[0].id;
+            }
+            renderAccountRouteEditor();
+        }
+
+        function renderAccountRoutingView() {
+            renderAccountModels();
+            renderAccountRouteEditor();
+        }
+
+        function renderAccountModels() {
+            const container = dom.byId('account-model-list');
+            if (!container) return;
+            container.innerHTML = '';
+
+            if (officialModels.length === 0) {
+                container.innerHTML = '<div class="text-xs text-gray-500">No official models available.</div>';
+                return;
+            }
+
+            officialModels.forEach(model => {
+                const route = getAccountRoute(model.id);
+                const count = route?.entries?.length || 0;
+                const card = document.createElement('button');
+                const isActive = model.id === selectedAccountModelId;
+                card.className = `node node-palette w-full text-left rounded-xl px-3 py-3 text-xs space-y-1 ${isActive ? 'border-cyan-300/70 shadow-[0_0_18px_rgba(110,231,255,0.25)]' : ''}`;
+                card.innerHTML = `
+                    <div class="flex items-center justify-between">
+                        <span class="text-sm font-semibold text-gray-200">${model.label}</span>
+                        <span class="account-pill text-[10px] px-2 py-0.5 rounded-full">${count} hops</span>
+                    </div>
+                    <div class="text-[10px] text-gray-500">${model.id}</div>
+                `;
+                card.addEventListener('click', () => {
+                    selectedAccountModelId = model.id;
+                    renderAccountModels();
+                    renderAccountRouteEditor();
+                });
+                container.appendChild(card);
+            });
+        }
+
+        function renderAccountRouteEditor() {
+            const title = dom.byId('account-route-title');
+            const list = dom.byId('account-route-list');
+            const providerSelect = dom.byId('account-provider-select');
+            const accountSelect = dom.byId('account-account-select');
+            const hint = dom.byId('account-route-hint');
+
+            if (!title || !list || !providerSelect || !accountSelect) return;
+
+            if (!selectedAccountModelId) {
+                title.textContent = 'Select a model';
+                list.innerHTML = '';
+                return;
+            }
+
+            title.textContent = `Model: ${selectedAccountModelId}`;
+            list.innerHTML = '';
+
+            const route = ensureAccountRoute(selectedAccountModelId);
+
+            route.entries.forEach((entry, index) => {
+                const card = document.createElement('div');
+                card.className = 'node rounded-xl px-3 py-3 text-xs flex items-center justify-between gap-3';
+                const rawLabel = entry.accountLabel || entry.accountId;
+                const display = entry.accountId === 'auto'
+                    ? 'Auto (Smart Switch)'
+                    : (entry.provider === 'copilot' ? maskUsername(rawLabel) : maskEmail(rawLabel));
+                card.innerHTML = `
+                    <div>
+                        <div class="text-[10px] uppercase tracking-[0.2em] text-gray-500">${entry.provider}</div>
+                        <div class="text-sm font-semibold text-gray-200 mt-1">${display}</div>
+                    </div>
+                    <div class="flex items-center gap-2 text-[10px] text-gray-500">
+                        <button onclick="moveAccountRouteEntry(${index}, -1)">Up</button>
+                        <button onclick="moveAccountRouteEntry(${index}, 1)">Down</button>
+                        <button onclick="removeAccountRouteEntry(${index})">Remove</button>
+                    </div>
+                `;
+                list.appendChild(card);
+            });
+
+            if (route.entries.length === 0) {
+                list.innerHTML = '<div class="text-xs text-gray-500">No entries yet.</div>';
+            }
+
+            const providers = getProvidersForModel(selectedAccountModelId);
+            providerSelect.innerHTML = '<option value="">Provider</option>';
+            providers.forEach(provider => {
+                const option = document.createElement('option');
+                option.value = provider;
+                option.textContent = provider;
+                providerSelect.appendChild(option);
+            });
+
+            providerSelect.onchange = () => updateAccountSelectOptions();
+            updateAccountSelectOptions();
+
+            if (hint) {
+                hint.textContent = accountRouting.smartSwitch
+                    ? 'Smart Switch on: auto entries expand by account order.'
+                    : 'Smart Switch off: only explicit account order is used.';
+            }
+        }
+
+        function updateAccountSelectOptions() {
+            const providerSelect = dom.byId('account-provider-select');
+            const accountSelect = dom.byId('account-account-select');
+            const smartSwitchInput = dom.byId('smart-switch');
+            if (!providerSelect || !accountSelect) return;
+
+            const provider = providerSelect.value;
+            accountSelect.innerHTML = '<option value="">Account</option>';
+
+            if (!provider) return;
+
+            if (smartSwitchInput?.checked) {
+                const autoOption = document.createElement('option');
+                autoOption.value = 'auto';
+                autoOption.textContent = 'Auto (Smart Switch)';
+                accountSelect.appendChild(autoOption);
+            }
+
+            const accountList = accounts[provider] || [];
+            accountList.forEach(account => {
+                const option = document.createElement('option');
+                option.value = account.id;
+                option.textContent = account.displayName || account.id;
+                accountSelect.appendChild(option);
+            });
+        }
+
+        function addAccountRouteEntry() {
+            if (!selectedAccountModelId) return;
+            const providerSelect = dom.byId('account-provider-select');
+            const accountSelect = dom.byId('account-account-select');
+            if (!providerSelect || !accountSelect) return;
+
+            const provider = providerSelect.value;
+            const accountId = accountSelect.value;
+            if (!provider || !accountId) return;
+
+            const route = ensureAccountRoute(selectedAccountModelId);
+            const displayName = accountId === 'auto'
+                ? 'Auto (Smart Switch)'
+                : (accounts[provider] || []).find(acc => acc.id === accountId)?.displayName;
+            route.entries.push({
+                id: crypto.randomUUID(),
+                provider,
+                accountId,
+                accountLabel: displayName,
+            });
+            renderAccountRoutingView();
+        }
+
+        function moveAccountRouteEntry(index, delta) {
+            if (!selectedAccountModelId) return;
+            const route = ensureAccountRoute(selectedAccountModelId);
+            const target = index + delta;
+            if (target < 0 || target >= route.entries.length) return;
+            const [item] = route.entries.splice(index, 1);
+            route.entries.splice(target, 0, item);
+            renderAccountRoutingView();
+        }
+
+        function removeAccountRouteEntry(index) {
+            if (!selectedAccountModelId) return;
+            const route = ensureAccountRoute(selectedAccountModelId);
+            route.entries.splice(index, 1);
+            renderAccountRoutingView();
+        }
+
+        async function saveAccountRouting() {
+            await persistAccountRoutingOnly();
+        }
+
+        async function loadRouting() {
+            let data;
+            try {
+                data = await apiJson('/routing/config');
+            } catch (error) {
+                console.error('Failed to load routing config:', error);
+                return;
+            }
+            accounts = data.accounts || {};
+            models = data.models || {};
+            flows = Array.isArray(data.config?.flows) ? data.config.flows : [];
+            quotaData = data.quota || null;
+            accountRouting = data.config?.accountRouting || { smartSwitch: false, routes: [] };
+            officialModels = collectOfficialModels(models);
+
+            const savedFlowId = localStorage.getItem(STORAGE_KEYS.activeFlow);
+            const initialFlow = flows.find(flow => flow.id === savedFlowId) || flows[0] || null;
+            setActiveFlow(initialFlow);
+            renderAccounts();
+            bindCanvasEvents();
+            renderAccountRouting();
+            setRoutingTab(activeRoutingTab);
+        }
+
+        let routingRefreshing = false;
+        async function refreshRouting(showStatus = false) {
+            if (routingRefreshing) return;
+            routingRefreshing = true;
+            const status = dom.byId('save-status');
+            if (showStatus && status) {
+                status.textContent = 'Refreshing...';
+            }
+            try {
+                await loadRouting();
+                if (showStatus && status) {
+                    status.textContent = 'Refreshed';
+                }
+            } catch {
+                if (showStatus && status) {
+                    status.textContent = 'Refresh failed';
+                }
+            } finally {
+                if (showStatus && status) {
+                    setTimeout(() => status.textContent = '', 2000);
+                }
+                routingRefreshing = false;
+            }
+        }
+
+        function cloneEntries(entries) {
+            return (entries || []).map(entry => ({ ...entry }));
+        }
+
+        async function setActiveFlow(flow) {
+            activeFlowId = flow ? flow.id : null;
+            flowEntries = flow ? cloneEntries(flow.entries) : [];
+
+            const nameInput = dom.byId('flow-name');
+            if (nameInput) {
+                nameInput.value = flow?.name || '';
+            }
+
+            if (activeFlowId) {
+                localStorage.setItem(STORAGE_KEYS.activeFlow, activeFlowId);
+            } else {
+                localStorage.removeItem(STORAGE_KEYS.activeFlow);
+            }
+
+            // 🆕 同步到后端，让服务器知道当前激活的 flow
+            try {
+                await apiPost('/routing/active-flow', { flowId: activeFlowId });
+                console.log(`Active flow set: ${flow?.name || '(none)'}`);
+            } catch (e) {
+                console.error('Failed to set active flow:', e);
+            }
+
+            renderFlow();
+            renderSavedFlows();
+        }
+
+        function renderSavedFlows() {
+            const container = dom.byId('saved-list');
+            if (!container) return;
+            container.innerHTML = '';
+
+            if (flows.length === 0) {
+                container.innerHTML = `<div class="text-xs text-gray-500">No saved flows yet.</div>`;
+                return;
+            }
+
+            flows.forEach(flow => {
+                const card = document.createElement('div');
+                const isActive = flow.id === activeFlowId;
+                card.className = `node node-palette rounded-xl px-3 py-3 text-xs space-y-2 ${isActive ? 'border-cyan-300/70 shadow-[0_0_18px_rgba(110,231,255,0.25)]' : ''}`;
+
+                const header = document.createElement('div');
+                header.className = 'flex items-center justify-between';
+                header.innerHTML = `
+                    <div class="text-sm font-semibold text-gray-200">${flow.name}</div>
+                    <span class="account-pill text-[10px] px-2 py-0.5 rounded-full">${flow.entries?.length || 0} hops</span>
+                `;
+                card.appendChild(header);
+
+                const hint = document.createElement('div');
+                hint.className = 'text-[10px] text-gray-500';
+                hint.textContent = isActive ? 'Editing' : 'Click to edit';
+                card.appendChild(hint);
+
+                const actions = document.createElement('div');
+                actions.className = 'flex items-center gap-3 text-[10px] text-gray-400';
+
+                const loadBtn = document.createElement('button');
+                loadBtn.textContent = isActive ? 'Editing' : 'Edit';
+                loadBtn.disabled = isActive;
+                loadBtn.addEventListener('click', (event) => {
+                    event.stopPropagation();
+                    setActiveFlow(flow);
+                });
+                actions.appendChild(loadBtn);
+
+                const deleteBtn = document.createElement('button');
+                deleteBtn.textContent = 'Delete';
+                deleteBtn.addEventListener('click', (event) => {
+                    event.stopPropagation();
+                    deleteFlow(flow.id);
+                });
+                actions.appendChild(deleteBtn);
+
+                card.appendChild(actions);
+                card.addEventListener('click', () => setActiveFlow(flow));
+                container.appendChild(card);
+            });
+        }
+
+        function newFlow() {
+            activeFlowId = null;
+            flowEntries = [];
+            const nameInput = dom.byId('flow-name');
+            if (nameInput) {
+                nameInput.value = '';
+            }
+            localStorage.removeItem(STORAGE_KEYS.activeFlow);
+            renderFlow();
+            renderSavedFlows();
+        }
+
+        async function deleteFlow(flowId) {
+            flows = flows.filter(flow => flow.id !== flowId);
+            if (activeFlowId === flowId) {
+                newFlow();
+            }
+            await persistRoutingConfig();
+        }
+
+        // Get quota percentage for a provider/account
+        function getAccountQuota(provider, accountId) {
+            if (!quotaData || !quotaData.accounts) return null;
+
+            // Find account in quotaData.accounts
+            const accountData = quotaData.accounts.find(acc =>
+                acc.provider === provider && acc.accountId === accountId
+            );
+
+            if (!accountData || !accountData.bars || accountData.bars.length === 0) return null;
+
+            // Get the first bar's percentage (typically "claude_gpt" or similar)
+            return accountData.bars[0].percentage;
+        }
+
+        // Get quota percentage for a specific model
+        function getModelQuota(provider, accountId, modelId) {
+            if (!quotaData || !quotaData.accounts) return null;
+            if (provider !== 'antigravity') return null; // Only antigravity has model-level quotas
+
+            const accountData = quotaData.accounts.find(acc =>
+                acc.provider === provider && acc.accountId === accountId
+            );
+
+            if (!accountData || !accountData.bars) return null;
+
+            let barKey = null;
+            if (MODEL_GROUPS.claudeGpt.includes(modelId)) barKey = 'claude_gpt';
+            else if (MODEL_GROUPS.gpro.includes(modelId)) barKey = 'gpro';
+            else if (MODEL_GROUPS.gflash.includes(modelId)) barKey = 'gflash';
+
+            if (!barKey) return null;
+
+            const bar = accountData.bars.find(b => b.key === barKey);
+            return bar ? bar.percentage : null;
+        }
+
+        function renderAccounts() {
+            const container = dom.byId('account-list');
+            container.innerHTML = '';
+            let totalAccounts = 0;
+
+            PROVIDER_ORDER.forEach(provider => {
+                const providerAccounts = accounts[provider] || [];
+                const providerModels = models[provider] || [];
+                if (providerAccounts.length === 0) return;
+                totalAccounts += providerAccounts.length;
+
+                providerAccounts.forEach(account => {
+                    const card = document.createElement('div');
+                    card.className = 'space-y-2';
+
+                    // Get quota percentage for this account (quotaPercent = REMAINING percentage, not used)
+                    const remaining = getAccountQuota(provider, account.id);
+
+                    // Check if this account is collapsed (default to collapsed)
+                    const collapseKey = `routing-collapse-${provider}-${account.id}`;
+                    const storedValue = localStorage.getItem(collapseKey);
+                    const isCollapsed = storedValue === null ? true : storedValue === 'true';
+
+                    const maskedDisplayName = provider === 'copilot' ? maskUsername(account.displayName) : maskEmail(account.displayName);
+
+                    const header = document.createElement('div');
+                    header.className = 'flex items-center justify-between cursor-pointer hover:opacity-80 transition-opacity';
+                    header.innerHTML = `
+                        <div class="flex items-center gap-2">
+                            <span class="text-[10px] text-gray-500 transition-transform ${isCollapsed ? '' : 'rotate-90'}" data-toggle-icon>▶</span>
+                            <span class="text-sm font-semibold text-gray-200">${maskedDisplayName}</span>
+                        </div>
+                        <div class="flex items-center gap-2">
+                            <span class="account-pill text-[10px] px-2 py-0.5 rounded-full">${provider}</span>
+                        </div>
+                    `;
+                    card.appendChild(header);
+
+                    const modelGrid = document.createElement('div');
+                    modelGrid.className = 'grid grid-cols-1 gap-2 overflow-hidden transition-all duration-200';
+                    modelGrid.style.maxHeight = isCollapsed ? '0px' : '1000px';
+                    modelGrid.style.opacity = isCollapsed ? '0' : '1';
+
+                    // Toggle collapse on header click
+                    header.addEventListener('click', () => {
+                        const nowCollapsed = modelGrid.style.maxHeight !== '0px';
+                        modelGrid.style.maxHeight = nowCollapsed ? '0px' : '1000px';
+                        modelGrid.style.opacity = nowCollapsed ? '0' : '1';
+                        header.querySelector('[data-toggle-icon]').classList.toggle('rotate-90', !nowCollapsed);
+                        localStorage.setItem(collapseKey, nowCollapsed ? 'true' : 'false');
+                    });
+
+                    providerModels.forEach(model => {
+                        const node = document.createElement('div');
+                        node.className = 'node flow-node rounded-xl px-3 py-2 text-xs cursor-grab relative overflow-hidden';
+                        node.draggable = true;
+                        node.dataset.provider = provider;
+                        node.dataset.accountId = account.id;
+                        node.dataset.modelId = model.id;
+                        node.dataset.label = model.label;
+                        node.dataset.accountLabel = account.displayName;
+
+                        // Get model-specific quota (for antigravity) or account quota (for others)
+                        const modelQuota = getModelQuota(provider, account.id, model.id) ?? getAccountQuota(provider, account.id);
+                        const baseGradient = "linear-gradient(145deg, rgba(110, 231, 255, 0.14), rgba(10, 10, 10, 0.9))";
+
+                        // Combine flow gradient with battery fill effect
+                        if (modelQuota !== null) {
+                            node.style.backgroundImage = `linear-gradient(90deg, 
+                                rgba(110, 231, 255, 0.22) 0%, 
+                                rgba(110, 231, 255, 0.16) ${modelQuota}%, 
+                                rgba(10, 10, 10, 0.95) ${modelQuota}%), ${baseGradient}`;
+                        } else {
+                            node.style.backgroundImage = baseGradient;
+                        }
+
+                        node.innerHTML = `
+                            <div class="flex items-center justify-between relative z-10">
+                                <span>${model.label}</span>
+                                ${modelQuota !== null ? `<span class="text-[10px] text-cyan-400/80">${modelQuota}%</span>` : ''}
+                            </div>
+                        `;
+                        node.addEventListener('dragstart', onDragStart);
+                        modelGrid.appendChild(node);
+                    });
+
+                    card.appendChild(modelGrid);
+                    container.appendChild(card);
+                });
+            });
+
+            if (totalAccounts === 0) {
+                container.innerHTML = `<div class="text-xs text-gray-500">No accounts yet. Add accounts from /quota.</div>`;
+            }
+        }
+
+        function renderFlow() {
+            const canvas = dom.byId('flow-canvas');
+            if (!canvas) return;
+            canvas.innerHTML = '';
+
+            const svg = document.createElementNS('http://www.w3.org/2000/svg', 'svg');
+            svg.setAttribute('id', 'flow-lines');
+            svg.setAttribute('class', 'flow-lines');
+            canvas.appendChild(svg);
+
+            flowEntries.forEach((entry, i) => {
+                const node = document.createElement('div');
+                node.className = 'node flow-node rounded-2xl px-4 py-3 text-sm cursor-grab';
+                node.draggable = true;
+                node.dataset.sourceIndex = i;
+                node.dataset.flowIndex = i;
+                node.addEventListener('dragstart', onDragStart);
+                node.addEventListener('dragover', onNodeDragOver);
+                node.addEventListener('dragleave', onNodeDragLeave);
+                node.addEventListener('drop', onNodeDrop);
+                // Apply privacy masking to account label
+                const rawAccountLabel = entry.accountLabel || entry.accountId;
+                const maskedAccountLabel = entry.provider === 'copilot' ? maskUsername(rawAccountLabel) : maskEmail(rawAccountLabel);
+
+                node.innerHTML = `
+                    <div class="flex items-center justify-between">
+                        <div class="flow-badge">${i + 1}</div>
+                        <span class="text-[10px] uppercase tracking-[0.2em] text-gray-500">${entry.provider}</span>
+                    </div>
+                    <div class="text-xs text-gray-500 mt-2">${maskedAccountLabel}</div>
+                    <div class="text-sm font-semibold text-gray-200 mt-1">${entry.label}</div>
+                    <div class="text-[10px] text-gray-500 mt-2">fallback on 429</div>
+                    <button class="text-[10px] text-gray-500 mt-2" onclick="removeEntry(${i})">Remove</button>
+                    <span class="flow-port flow-port-top"></span>
+                    <span class="flow-port flow-port-bottom"></span>
+                `;
+                canvas.appendChild(node);
+            });
+
+            const slot = document.createElement('div');
+            slot.className = 'drop-slot';
+            slot.dataset.index = flowEntries.length;
+            slot.textContent = 'Drop here';
+            slot.addEventListener('dragover', onDragOver);
+            slot.addEventListener('dragleave', onDragLeave);
+            slot.addEventListener('drop', onDrop);
+            canvas.appendChild(slot);
+
+            requestAnimationFrame(drawFlowLines);
+        }
+
+        function createEntryFromPayload(payload) {
+            return {
+                id: crypto.randomUUID(),
+                provider: payload.provider,
+                accountId: payload.accountId,
+                modelId: payload.modelId,
+                label: payload.label,
+                accountLabel: payload.accountLabel
+            };
+        }
+
+        function onDragStart(event) {
+            const node = event.target;
+            const payload = {
+                provider: node.dataset.provider,
+                accountId: node.dataset.accountId,
+                modelId: node.dataset.modelId,
+                label: node.dataset.label,
+                accountLabel: node.dataset.accountLabel,
+                sourceIndex: node.dataset.sourceIndex
+            };
+            event.dataTransfer.setData('application/json', JSON.stringify(payload));
+        }
+
+        function onDragOver(event) {
+            event.preventDefault();
+            event.currentTarget.classList.add('active');
+        }
+
+        function onDragLeave(event) {
+            event.currentTarget.classList.remove('active');
+        }
+
+        function onDrop(event) {
+            event.preventDefault();
+            const slot = event.currentTarget;
+            slot.classList.remove('active');
+            const index = Number(slot.dataset.index);
+            const payload = JSON.parse(event.dataTransfer.getData('application/json'));
+
+            if (payload.sourceIndex !== undefined) {
+                const from = Number(payload.sourceIndex);
+                const [moved] = flowEntries.splice(from, 1);
+                flowEntries.splice(index > from ? index - 1 : index, 0, moved);
+                renderFlow();
+                return;
+            }
+
+            const entry = createEntryFromPayload(payload);
+            flowEntries.splice(index, 0, entry);
+            renderFlow();
+        }
+
+        function onNodeDragOver(event) {
+            event.preventDefault();
+            event.currentTarget.classList.add('drop-target');
+        }
+
+        function onNodeDragLeave(event) {
+            event.currentTarget.classList.remove('drop-target');
+        }
+
+        function onNodeDrop(event) {
+            event.preventDefault();
+            const node = event.currentTarget;
+            node.classList.remove('drop-target');
+            const targetIndex = Number(node.dataset.flowIndex);
+            const payload = JSON.parse(event.dataTransfer.getData('application/json'));
+
+            if (payload.sourceIndex !== undefined) {
+                const from = Number(payload.sourceIndex);
+                const [moved] = flowEntries.splice(from, 1);
+                const insertIndex = from < targetIndex ? targetIndex - 1 : targetIndex;
+                flowEntries.splice(insertIndex, 0, moved);
+                renderFlow();
+                return;
+            }
+
+            const entry = createEntryFromPayload(payload);
+            flowEntries.splice(targetIndex, 0, entry);
+            renderFlow();
+        }
+
+        function removeEntry(index) {
+            flowEntries.splice(index, 1);
+            renderFlow();
+        }
+
+        async function saveRouting() {
+            const status = dom.byId('save-status');
+            const nameInput = dom.byId('flow-name');
+            const flowName = nameInput ? nameInput.value.trim() : '';
+
+            if (!flowName) {
+                status.textContent = 'Flow name required';
+                setTimeout(() => status.textContent = '', 2000);
+                return;
+            }
+
+            const existingByName = flows.find(flow => flow.name === flowName && flow.id !== activeFlowId);
+            if (existingByName) {
+                status.textContent = 'Flow name already exists';
+                setTimeout(() => status.textContent = '', 2000);
+                return;
+            }
+
+            const flowId = activeFlowId || crypto.randomUUID();
+            const flow = { id: flowId, name: flowName, entries: flowEntries };
+            const index = flows.findIndex(existing => existing.id === flowId);
+
+            if (index >= 0) {
+                flows[index] = flow;
+            } else {
+                flows.push(flow);
+            }
+
+            activeFlowId = flowId;
+            status.textContent = 'Saving...';
+            await persistRoutingConfig();
+            status.textContent = 'Saved';
+            setTimeout(() => status.textContent = '', 2000);
+        }
+
+        function clearRouting() {
+            flowEntries = [];
+            renderFlow();
+        }
+
+        function rotateRouting() {
+            if (flowEntries.length > 1) {
+                const first = flowEntries.shift();
+                flowEntries.push(first);
+                renderFlow();
+            }
+        }
+
+        async function persistRoutingConfig() {
+            let data;
+            try {
+                data = await apiPost('/routing/config', { flows, accountRouting });
+            } catch (error) {
+                console.error('Failed to save routing config:', error);
+                return;
+            }
+            flows = Array.isArray(data.config?.flows) ? data.config.flows : flows;
+            accountRouting = data.config?.accountRouting || accountRouting;
+            const active = flows.find(flow => flow.id === activeFlowId) || null;
+            setActiveFlow(active);
+            renderAccountRouting();
+        }
+
+        async function persistAccountRoutingOnly() {
+            let data;
+            try {
+                data = await apiPost('/routing/config', { accountRouting });
+            } catch (error) {
+                console.error('Failed to save account routing:', error);
+                return;
+            }
+            accountRouting = data.config?.accountRouting || accountRouting;
+            renderAccountRouting();
+        }
+
+        function bindCanvasEvents() {
+            const canvas = dom.byId('flow-canvas');
+            const scrollContainer = dom.qs('.flow-scroll');
+            if (!canvas || canvas.dataset.bound) return;
+            canvas.dataset.bound = 'true';
+
+            // Bind scroll event to the scrollable container
+            if (scrollContainer) {
+                scrollContainer.addEventListener('scroll', () => {
+                    requestAnimationFrame(drawFlowLines);
+                }, { passive: true });
+            }
+        }
+
+        function drawFlowLines() {
+            const canvas = dom.byId('flow-canvas');
+            const svg = canvas ? canvas.querySelector('#flow-lines') : null;
+            if (!canvas || !svg) return;
+
+            const width = Math.max(canvas.scrollWidth, canvas.clientWidth);
+            const height = Math.max(canvas.scrollHeight, canvas.clientHeight);
+
+            svg.setAttribute('width', width);
+            svg.setAttribute('height', height);
+            svg.setAttribute('viewBox', `0 0 ${width} ${height}`);
+            svg.style.width = `${width}px`;
+            svg.style.height = `${height}px`;
+
+            const canvasRect = canvas.getBoundingClientRect();
+            const scrollLeft = canvas.scrollLeft;
+            const scrollTop = canvas.scrollTop;
+
+            const nodes = Array.from(canvas.querySelectorAll('.flow-node'))
+                .sort((a, b) => Number(a.dataset.flowIndex) - Number(b.dataset.flowIndex));
+
+            const defs = `
+                <defs>
+                    <linearGradient id="flow-gradient" x1="0%" y1="0%" x2="100%" y2="0%">
+                        <stop offset="0%" stop-color="#6ee7ff" stop-opacity="0.9"></stop>
+                        <stop offset="60%" stop-color="#8b9bff" stop-opacity="0.9"></stop>
+                        <stop offset="100%" stop-color="#a78bfa" stop-opacity="0.9"></stop>
+                    </linearGradient>
+                    <filter id="flow-glow" x="-50%" y="-50%" width="200%" height="200%">
+                        <feGaussianBlur stdDeviation="6" result="coloredBlur"></feGaussianBlur>
+                        <feMerge>
+                            <feMergeNode in="coloredBlur"></feMergeNode>
+                            <feMergeNode in="SourceGraphic"></feMergeNode>
+                        </feMerge>
+                    </filter>
+                </defs>
+            `;
+
+            let paths = '';
+            for (let i = 0; i < nodes.length - 1; i++) {
+                const current = nodes[i];
+                const next = nodes[i + 1];
+                const startPort = current.querySelector('.flow-port-bottom');
+                const endPort = next.querySelector('.flow-port-top');
+                if (!startPort || !endPort) continue;
+
+                const startRect = startPort.getBoundingClientRect();
+                const endRect = endPort.getBoundingClientRect();
+                const startX = startRect.left - canvasRect.left + scrollLeft + startRect.width / 2;
+                const startY = startRect.top - canvasRect.top + scrollTop + startRect.height / 2;
+                const endX = endRect.left - canvasRect.left + scrollLeft + endRect.width / 2;
+                const endY = endRect.top - canvasRect.top + scrollTop + endRect.height / 2;
+                const curve = Math.max(40, Math.min(180, Math.abs(endY - startY) * 0.5));
+
+                const path = `M ${startX} ${startY} C ${startX} ${startY + curve}, ${endX} ${endY - curve}, ${endX} ${endY}`;
+                paths += `<path class="flow-line-glow" d="${path}"></path>`;
+                paths += `<path class="flow-line-core" d="${path}"></path>`;
+            }
+
+            svg.innerHTML = `${defs}${paths}`;
+        }
+
+        const routingExports = {
+            setRoutingTab,
+            newFlow,
+            saveRouting,
+            saveAccountRouting,
+            refreshRouting,
+            addAccountRouteEntry,
+            moveAccountRouteEntry,
+            removeAccountRouteEntry,
+            removeEntry,
+        };
+        Object.assign(window, routingExports);
+
+        loadRouting();
+        window.addEventListener('resize', drawFlowLines);
+
+        // Listen for privacy mode changes from other pages
+        window.addEventListener('storage', (e) => {
+            if (e.key === STORAGE_KEYS.privacyMode) {
+                console.log('[Routing] Privacy mode changed, re-rendering...');
+                renderAccounts();
+                renderFlow();
+                renderAccountRouting();
+            }
+        });
+    </script>
+</body>
+
+</html>
